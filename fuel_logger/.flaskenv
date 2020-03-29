@@ -1,1 +1,1 @@
-FLASK_APP=fuel_logger/app.py
+FLASK_APP=fuel_logger.py
