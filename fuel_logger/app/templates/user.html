@@ -1,2 +1,8 @@
-<h1>User: {{ user.username }}</h1>
-User page
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>
+        {{ current_user.username }}
+    </h1>
+    Content
+{% endblock %}
