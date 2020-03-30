@@ -4,5 +4,18 @@
     <h1>
         {{ current_user.username }}
     </h1>
-    Content
+    {% with vehicles = current_user.vehicles %}
+    <h3>Vehicles:</h3>
+    {% if vehicles %}
+    <ul>
+        {% for vehicle in vehicles %}
+            <li><a href='{{ url_for("vehicle", vehicle_id=vehicle.id) }}'>{{ vehicle.year }} {{ vehicle.make }} {{ vehicle.model }}</a></li>
+        {% endfor %}
+    </ul>
+    
+    {% else %}
+        None
+    {% endif %}
+    {% endwith %}
+    <a href='{{ url_for("add_vehicle") }}'>Add vehicle</a>
 {% endblock %}

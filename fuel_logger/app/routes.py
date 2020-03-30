@@ -61,8 +61,8 @@ def add_vehicle():
     form = VehicleForm()
     if form.validate_on_submit():
         v = Vehicle(make=form.make.data, model=form.model.data, year=form.year.data)
-        # current_user.vehicles.append(v)
-        # db.session.commit()
+        current_user.vehicles.append(v)
+        db.session.commit()
         flash('Your vehicle has been added')
         return redirect(url_for('index'))
     return render_template('add_vehicle.html', form=form)
