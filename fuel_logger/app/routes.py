@@ -13,6 +13,7 @@ from werkzeug.urls import url_parse
 def index():
     return render_template('home.html')
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -30,10 +31,12 @@ def login():
         return redirect(next_page)
     return render_template('login.html', title='Sign In', form=form)
 
+
 @app.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -48,6 +51,7 @@ def register():
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
+
 
 @app.route("/vehicles/<vehicle_id>", methods=['GET', 'POST'])
 def vehicle(vehicle_id):
@@ -72,11 +76,11 @@ def add_vehicle():
         return redirect(url_for('user', username=current_user.username))
     return render_template('add_vehicle.html', form=form)
 
+
 @app.route('/users/<username>')
 def user(username):
     u = User.query.filter_by(username=username).first_or_404()
     return render_template('user.html', user=u)
-
 
 
 @app.route('/test')

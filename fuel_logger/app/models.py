@@ -30,6 +30,10 @@ class Vehicle(db.Model):
 
     fill_ups = db.relationship('Fillup', backref='vehicle', lazy='dynamic')
 
+    @property
+    def current_odometer(self):
+        return self.fill_ups.order_by(Fillup.timestamp.desc()).first().odometer_km
+
     def __repr__(self):
         return "<Vehicle {} {}>".format(self.make, self.model)
 

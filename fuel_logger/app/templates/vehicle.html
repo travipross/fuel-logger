@@ -28,7 +28,7 @@
     {% endif %}
     
     <h3>Fill-ups:</h3>
-    {% with fill_ups = vehicle.fill_ups %}
+    {% with fill_ups = vehicle.fill_ups.all() %}
     {% if fill_ups %}
     {% for fill_up in fill_ups %}
         <b>{{ fill_up.timestamp }}:</b><br>
@@ -37,7 +37,7 @@
         <hr>
     {% endfor %}
     {% else %}
-        None
+        No logs for this vehicle
     {% endif %}
     {% endwith %}
 {% endblock %}
