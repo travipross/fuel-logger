@@ -1,0 +1,27 @@
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.make.label }}<br>
+        {{ form.make() }}<br>
+        {% for error in form.make.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.model.label }}<br>
+        {{ form.model() }}<br>
+        {% for error in form.model.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.year.label }}<br>
+        {{ form.year() }}<br>
+        {% for error in form.year.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.submit() }}
+    </p>
+</form>
