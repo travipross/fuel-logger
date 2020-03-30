@@ -1,2 +1,19 @@
-<h1>{% if vehicle.year %}{{ vehicle.year }}{% endif %} {{ vehicle.make }} {{ vehicle.model }}</h1>
-Vehicle page
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>{% if vehicle.year %}{{ vehicle.year }}{% endif %} {{ vehicle.make }} {{ vehicle.model }}</h1>
+    Vehicle page
+    <h3>Fillups:</h3>
+    {% with fill_ups = vehicle.fill_ups %}
+    {% if fill_ups %}
+    {% for fill_up in fill_ups %}
+        <b>{{ fill_up.timestamp }}:</b><br>
+        Fuel: {{ fill_up.fuel_amt_l }} L<br>
+        Odometer: {{ fill_up.odometer_km }} km
+        <hr>
+    {% endfor %}
+    {% else %}
+        None
+    {% endif %}
+    {% endwith %}
+{% endblock %}

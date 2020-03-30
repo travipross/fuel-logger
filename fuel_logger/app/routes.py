@@ -64,7 +64,7 @@ def add_vehicle():
         current_user.vehicles.append(v)
         db.session.commit()
         flash('Your vehicle has been added')
-        return redirect(url_for('index'))
+        return redirect(url_for('user', username=current_user.username))
     return render_template('add_vehicle.html', form=form)
 
 @app.route('/users/<username>')
