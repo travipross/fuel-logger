@@ -2,7 +2,7 @@ from app import app, db
 from flask import render_template, redirect, url_for, flash, request
 
 from app.models import Fillup, Vehicle, User
-from app.forms import VehicleForm, RegistrationForm, LoginForm
+from app.forms import VehicleForm, RegistrationForm, LoginForm, FillupForm
 from flask_login import login_required, current_user, login_user, logout_user
 from werkzeug.urls import url_parse
 
@@ -49,12 +49,17 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
-@app.route("/vehicles/<vehicle_id>")
+@app.route("/vehicles/<vehicle_id>", methods=['GET', 'POST'])
 def vehicle(vehicle_id):
-    v = Vehicle.query.get(vehicle_id)
-    if v is None:
-        return render_template('home.html')
-    return render_template('vehicle.html', vehicle=v)
+    v = Vehicle.query.get_or_404(vehicle_id)
+    form = FillupForm()
+    if form.validate_on_submit():
+        f = Fillup(odometer_km=form.odometer.data, fuel_amt_l=form.fuel.data, vehicle=v)
+        db.session.add(f)
+        db.session.commit()
+        flash('Your fuel log has been updated!')
+    return render_template('vehicle.html', vehicle=v, form=form)
+
 
 @app.route("/add_vehicle", methods=["GET", "POST"])
 def add_vehicle():

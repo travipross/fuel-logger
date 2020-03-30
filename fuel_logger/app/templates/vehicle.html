@@ -3,7 +3,31 @@
 {% block content %}
     <h1>{% if vehicle.year %}{{ vehicle.year }}{% endif %} {{ vehicle.make }} {{ vehicle.model }}</h1>
     Vehicle page
-    <h3>Fillups:</h3>
+    {% if form %}
+        <h3>Add a new fill-up log entry:</h3>
+        <form action="" method="post">
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.fuel.label }}<br>
+                {{ form.fuel() }}<br>
+                {% for error in form.fuel.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.odometer.label }}<br>
+                {{ form.odometer() }}<br>
+                {% for error in form.odometer.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.submit() }}
+            </p>
+        </form>
+    {% endif %}
+    
+    <h3>Fill-ups:</h3>
     {% with fill_ups = vehicle.fill_ups %}
     {% if fill_ups %}
     {% for fill_up in fill_ups %}

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, SubmitField, PasswordField, BooleanField
+from wtforms import StringField, IntegerField, SubmitField, PasswordField, BooleanField, FloatField
 from wtforms.validators import DataRequired, EqualTo, Email, ValidationError
 from app.models import User
 
@@ -32,3 +32,9 @@ class VehicleForm(FlaskForm):
     model = StringField('Vehicle Model', validators=[DataRequired()])
     year = IntegerField('Vehicle Year', validators=[DataRequired()])
     submit = SubmitField('Submit Vehicle')
+
+
+class FillupForm(FlaskForm):
+    fuel = FloatField('Fuel Amount (L)', validators=[DataRequired()])
+    odometer = FloatField('Odometer Reading (km)', validators=[DataRequired()])
+    submit = SubmitField('Submit Log')
