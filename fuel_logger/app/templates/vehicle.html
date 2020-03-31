@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block content %}
+{% block app_content %}
     <h1>{% if vehicle.year %}{{ vehicle.year }}{% endif %} {{ vehicle.make }} {{ vehicle.model }}</h1>
     Vehicle page
     {% if form %}
@@ -31,7 +31,7 @@
     {% with fill_ups = vehicle.fill_ups.all() %}
     {% if fill_ups %}
     {% for fill_up in fill_ups %}
-        <b>{{ fill_up.timestamp }}:</b><br>
+        <b>{{ moment(fill_up.timestamp).format('LLL') }}:</b><br>
         Fuel: {{ fill_up.fuel_amt_l }} L<br>
         Odometer: {{ fill_up.odometer_km }} km
         <hr>
