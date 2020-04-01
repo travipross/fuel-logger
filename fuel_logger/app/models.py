@@ -1,8 +1,9 @@
-from app import db, login
+from app import db, login, LP100K_TO_MPG
 from datetime import datetime
 from hashlib import md5 
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+import pandas as pd
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)

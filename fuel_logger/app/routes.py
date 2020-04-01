@@ -62,6 +62,7 @@ def vehicle(vehicle_id):
         db.session.add(f)
         db.session.commit()
         flash('Your fuel log has been updated!')
+        return redirect(url_for('vehicle', vehicle_id=vehicle_id))
     return render_template('vehicle.html', vehicle=v, form=form)
 
 
