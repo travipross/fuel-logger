@@ -30,11 +30,8 @@
     <h3>Fill-ups:</h3>
     {% with fill_ups = vehicle.fill_ups.all() %}
     {% if fill_ups %}
-    {% for fill_up in fill_ups %}
-        <b>{{ moment(fill_up.timestamp).format('LLL') }}:</b><br>
-        Fuel: {{ fill_up.fuel_amt_l }} L<br>
-        Odometer: {{ fill_up.odometer_km }} km
-        <hr>
+    {% for fillup in fill_ups %}
+        {% include '_fillup.html' %}
     {% endfor %}
     {% else %}
         No logs for this vehicle

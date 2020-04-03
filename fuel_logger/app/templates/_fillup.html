@@ -1,12 +1,15 @@
-<table>
+<table class="table table-hover">
     <tr>
         <td>
-            {{ fillup.vehicle.make }} {{ fillup.vehicle.model }} <br>
-            {{ fillup.vehicle.owner.username }}
+            <b>{{ moment(fillup.timestamp).format('LLL') }}:</b><br>
+            Fuel: {{ fillup.fuel_amt_l }} L<br>
+            Odometer: {{ fillup.odometer_km }} km
         </td>
         <td>
-            Fuel Consumed: {{ fillup.fuel_amt_l }} L <br>
-            Odometer reading: {{ fillup.odometer_km }} km
+            <b>Fuel Economy:</b> <br>
+            {{ fillup.lp100k|round(1) }} L/100 km <br>
+            {{ fillup.mpg|round(1) }} MPG (US) <br>
+            {{ fillup.mpg_imp|round(1) }} MPG (Imp)
         </td>
     </tr>
 </table>
