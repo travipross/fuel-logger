@@ -1,5 +1,5 @@
 from app import app, db
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, g
 
 from app.models import Fillup, Vehicle, User
 from app.forms import VehicleForm, RegistrationForm, LoginForm, FillupForm
@@ -56,6 +56,7 @@ def register():
 @app.route("/vehicles/<vehicle_id>", methods=['GET', 'POST'])
 def vehicle(vehicle_id):
     v = Vehicle.query.get_or_404(vehicle_id)
+    g.vehicle = v
     form = FillupForm()
     if form.validate_on_submit():
         f = Fillup(odometer_km=form.odometer.data, fuel_amt_l=form.fuel.data, vehicle=v)
