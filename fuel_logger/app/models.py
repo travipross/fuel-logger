@@ -1,4 +1,4 @@
-from app import db, login, MPG_PER_LP100K, MPG_IMP_PER_MPG
+from app import db, login, MPG_LP100K, MPG_IMP_PER_MPG
 from datetime import datetime
 from hashlib import md5 
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -47,23 +47,13 @@ class Fillup(db.Model):
     fuel_amt_l = db.Column(db.Float, nullable=False)
     dist = db.Column(db.Integer, default=0)
 
-    # @property
-    # def dist(self):
-    #     prev_fillup = self.query.filter_by(vehicle=self.vehicle) \
-    #                              .order_by(Fillup.timestamp.desc()) \
-    #                              .offset(1).first()
-    #     if prev_fillup:
-    #         return self.odometer_km - prev_fillup.odometer_km
-    #     else:
-    #         return self.odometer_km
-
     @property
     def lp100k(self):
-        return self.fuel_amt_l / (100.0 * self.dist)
+        return self.fuel_amt_l / self.dist * 100
 
     @property
     def mpg(self):
-        return self.lp100k*MPG_PER_LP100K
+        return MPG_LP100K/self.lp100k
 
     @property
     def mpg_imp(self):
