@@ -1,9 +1,10 @@
-from app import db, login, LP100K_TO_MPG
+from app import db, login, MPG_PER_LP100K, MPG_IMP_PER_MPG
 from datetime import datetime
 from hashlib import md5 
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 import pandas as pd
+from sqlalchemy import event
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -44,16 +45,45 @@ class Fillup(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     odometer_km = db.Column(db.Integer, nullable=False)
     fuel_amt_l = db.Column(db.Float, nullable=False)
+    dist = db.Column(db.Integer, default=0)
+
+    # @property
+    # def dist(self):
+    #     prev_fillup = self.query.filter_by(vehicle=self.vehicle) \
+    #                              .order_by(Fillup.timestamp.desc()) \
+    #                              .offset(1).first()
+    #     if prev_fillup:
+    #         return self.odometer_km - prev_fillup.odometer_km
+    #     else:
+    #         return self.odometer_km
 
     @property
-    def owner(self):
-        return self.vehicle.owner
+    def lp100k(self):
+        return self.fuel_amt_l / (100.0 * self.dist)
+
+    @property
+    def mpg(self):
+        return self.lp100k*MPG_PER_LP100K
+
+    @property
+    def mpg_imp(self):
+        return self.mpg*MPG_IMP_PER_MPG
+
 
     def __repr__(self):
-        return "<Fillup date={}, vehicle={}, fuel_L={}, dist_km={}>".format(self.timestamp, self.vehicle.model, self.fuel_amt_l, self.odometer_km)
+        return "<Fillup date={}, vehicle={}, fuel_L={}, odo_km={}>".format(self.timestamp, self.vehicle.model, self.fuel_amt_l, self.odometer_km)
 
 
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
 
+@event.listens_for(Fillup, 'before_insert')
+def before_insert_function(mapper, connection, target):
+    prev_fillup = Fillup.query.filter_by(vehicle=target.vehicle) \
+                              .order_by(Fillup.timestamp.desc()) \
+                              .first()
+    if prev_fillup:
+        target.dist = target.odometer_km - prev_fillup.odometer_km
+    else:
+        target.dist = target.odometer_km
