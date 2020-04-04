@@ -24,35 +24,13 @@
                 {% if current_user.is_anonymous %}
                 <li><a href="{{ url_for('login') }}">Login</a></li>
                 {% else %}
-                <li><a href="{{ url_for('user', username=current_user.username) }}">Vehicles</a></li>
+                <li><a href="{{ url_for('garage', username=current_user.username) }}">My Garage</a></li>
                 <li><a href="{{ url_for('logout') }}">Logout</a></li>
                 {% endif %}
             </ul>
         </div>
     </div>
 </nav>
-
-
-
-
-
-
-
-
-    <!-- <nav class='navbar navbar-default'>
-        <div class="container">
-            
-        </div>
-        <div class="navbar-brand">Fuel Logger</div>
-        <div class
-        <a href="{{ url_for('index') }}">Home</a>
-        {% if current_user.is_anonymous %}
-        <a href="{{ url_for('login') }}">Login</a>
-        {% else %}
-        <a href="{{ url_for('user', username=current_user.username) }}">Profile</a>
-        <a href="{{ url_for('logout') }}">Logout</a>
-        {% endif %}
-    </nav> -->
 {% endblock %}
 
 {% block content %}

@@ -53,8 +53,8 @@ def register():
     return render_template('register.html', title='Register', form=form)
 
 
-@app.route("/vehicles/<vehicle_id>", methods=['GET', 'POST'])
-def vehicle(vehicle_id):
+@app.route("/fillups/<vehicle_id>", methods=['GET', 'POST'])
+def fillups(vehicle_id):
     v = Vehicle.query.get_or_404(vehicle_id)
     g.vehicle = v
     form = FillupForm()
@@ -63,8 +63,8 @@ def vehicle(vehicle_id):
         db.session.add(f)
         db.session.commit()
         flash('Your fuel log has been updated!')
-        return redirect(url_for('vehicle', vehicle_id=vehicle_id))
-    return render_template('vehicle.html', vehicle=v, form=form)
+        return redirect(url_for('fillups', vehicle_id=vehicle_id))
+    return render_template('fillup.html', vehicle=v, form=form)
 
 
 @app.route("/add_vehicle", methods=["GET", "POST"])
@@ -79,10 +79,10 @@ def add_vehicle():
     return render_template('add_vehicle.html', form=form)
 
 
-@app.route('/users/<username>')
-def user(username):
+@app.route('/garage/<username>')
+def garage(username):
     u = User.query.filter_by(username=username).first_or_404()
-    return render_template('user.html', user=u)
+    return render_template('garage.html', user=u)
 
 
 @app.route('/test')

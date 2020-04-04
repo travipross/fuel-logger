@@ -2,5 +2,7 @@
 
 {% block app_content %}
     <h1>Home page</h1>
-    Content
+    {% with v = current_user.vehicles.first() %}
+    <h3>Primary Vehicle: {{ v.year }} {{ v.make }} {{ v.model }} </h3>
+    {% endwith %}
 {% endblock %}

@@ -9,7 +9,7 @@
     {% if vehicles %}
     <ul>
         {% for vehicle in vehicles %}
-            <li><a href='{{ url_for("vehicle", vehicle_id=vehicle.id) }}'>{{ vehicle.year }} {{ vehicle.make }} {{ vehicle.model }}</a></li>
+            <li><a href='{{ url_for("fillups", vehicle_id=vehicle.id) }}'>{{ vehicle.year }} {{ vehicle.make }} {{ vehicle.model }}</a></li>
         {% endfor %}
     </ul>
     
