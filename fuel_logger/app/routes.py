@@ -5,7 +5,7 @@ from app.models import Fillup, Vehicle, User
 from app.forms import VehicleForm, RegistrationForm, LoginForm, FillupForm
 from flask_login import login_required, current_user, login_user, logout_user
 from werkzeug.urls import url_parse
-
+from werkzeug.exceptions import HTTPException
 
 @app.route("/")
 @app.route("/index")
@@ -33,6 +33,7 @@ def login():
 
 
 @app.route('/logout')
+@login_required
 def logout():
     logout_user()
     return redirect(url_for('index'))
@@ -53,9 +54,12 @@ def register():
     return render_template('register.html', title='Register', form=form)
 
 
-@app.route("/fillups/<vehicle_id>", methods=['GET', 'POST'])
-def fillups(vehicle_id):
+@app.route("/logs/<vehicle_id>", methods=['GET', 'POST'])
+@login_required
+def logs(vehicle_id):
     v = Vehicle.query.get_or_404(vehicle_id)
+    if v.owner != current_user:
+        return render_template("403.html", message="You don't have access to these logs")
     g.vehicle = v
     form = FillupForm()
     if form.validate_on_submit():
@@ -63,11 +67,12 @@ def fillups(vehicle_id):
         db.session.add(f)
         db.session.commit()
         flash('Your fuel log has been updated!')
-        return redirect(url_for('fillups', vehicle_id=vehicle_id))
-    return render_template('fillup.html', vehicle=v, form=form)
+        return redirect(url_for('logs', vehicle_id=vehicle_id))
+    return render_template('vehicle_logs.html', vehicle=v, form=form)
 
 
 @app.route("/add_vehicle", methods=["GET", "POST"])
+@login_required
 def add_vehicle():
     form = VehicleForm()
     if form.validate_on_submit():
@@ -75,17 +80,15 @@ def add_vehicle():
         current_user.vehicles.append(v)
         db.session.commit()
         flash('Your vehicle has been added')
-        return redirect(url_for('user', username=current_user.username))
+        return redirect(url_for('garage', user_id=current_user.id))
     return render_template('add_vehicle.html', form=form)
 
 
-@app.route('/garage/<username>')
-def garage(username):
-    u = User.query.filter_by(username=username).first_or_404()
+@app.route('/garage/<user_id>')
+@login_required
+def garage(user_id):
+    u = User.query.get(user_id)
+    if u != current_user:
+        return render_template('403.html', message="You don't have access to this garage."), 403
     return render_template('garage.html', user=u)
 
-
-@app.route('/test')
-def test():
-    f = Fillup.query.first()
-    return render_template('_fillup.html', fillup=f)

@@ -2,14 +2,14 @@
 
 {% block app_content %}
     <h1>
-        {{ current_user.username }}
+        {{ current_user.username }}'s Garage
     </h1>
     {% with vehicles = current_user.vehicles %}
     <h3>Vehicles:</h3>
     {% if vehicles %}
     <ul>
         {% for vehicle in vehicles %}
-            <li><a href='{{ url_for("fillups", vehicle_id=vehicle.id) }}'>{{ vehicle.year }} {{ vehicle.make }} {{ vehicle.model }}</a></li>
+            <li><a href='{{ url_for("logs", vehicle_id=vehicle.id) }}'>{{ vehicle.year }} {{ vehicle.make }} {{ vehicle.model }}</a></li>
         {% endfor %}
     </ul>
     

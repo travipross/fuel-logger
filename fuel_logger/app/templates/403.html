@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    <h1>Unauthorized</h1>
+    {% if message %}{{ message }}{% endif %}
+    <p><a href="{{ url_for('index') }}">Back</a></p>
+{% endblock %}

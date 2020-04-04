@@ -3,6 +3,6 @@
 {% block app_content %}
     <h1>Home page</h1>
     {% with v = current_user.vehicles.first() %}
-    <h3>Primary Vehicle: {{ v.year }} {{ v.make }} {{ v.model }} </h3>
+    <h3>Primary Vehicle: <a href="{{url_for('logs', vehicle_id=v.id)}}">{{ v.year }} {{ v.make }} {{ v.model }}</a></h3>
     {% endwith %}
 {% endblock %}
