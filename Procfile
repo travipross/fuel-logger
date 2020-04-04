@@ -1,1 +1,1 @@
-web: flask db upgrade; gunicorn fuel_logger:app
+web: flask db upgrade; gunicorn --chdir fuel_logger fuel_logger:app
