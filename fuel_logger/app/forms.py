@@ -43,6 +43,6 @@ class FillupForm(FlaskForm):
     submit = SubmitField('Submit Log')
 
     def validate_odometer(self, odometer):
-        last_odo = db.session.query(Fillup.odometer_km, func.max(Fillup.odometer_km)).scalar() or 0
+        last_odo = db.session.query(func.max(Fillup.odometer_km)).scalar() or 0
         if odometer.data <= last_odo:
             raise ValidationError("Odometer value is less than a previous record.")
