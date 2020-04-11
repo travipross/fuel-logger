@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
     <div class='row'>
@@ -45,26 +46,7 @@
     <div class='row'>
         {% if form %}
             <h3>Add a new fill-up log entry:</h3>
-            <form action="" method="post">
-                {{ form.hidden_tag() }}
-                <p>
-                    {{ form.fuel.label }}<br>
-                    {{ form.fuel() }}<br>
-                    {% for error in form.fuel.errors %}
-                    <span style="color: red;">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ form.odometer.label }}<br>
-                    {{ form.odometer() }}<br>
-                    {% for error in form.odometer.errors %}
-                    <span style="color: red;">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ form.submit() }}
-                </p>
-            </form>
+            {{ wtf.quick_form(form)}}
         {% endif %}
     </div>
     <div class='row'>
