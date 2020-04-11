@@ -15,15 +15,16 @@ def compute_stats_from_fillup_df(df):
     avg_mpg = last_10.mpg.mean()
     avg_mpg_imp = last_10.mpg_imp.mean()
 
-    best_lp100k = df.lp100k.max()
+    best_lp100k = df.lp100k.min()
     best_mpg = df.mpg.max()
     best_mpg_imp = df.mpg_imp.max()
 
-    worst_lp100k = df.lp100k.min()
+    worst_lp100k = df.lp100k.max()
     worst_mpg = df.mpg.min()
     worst_mpg_imp = df.mpg_imp.min()
 
     total_fuel = df.fuel_amt_l.sum()
+    current_odo = df.odometer_km.max()
 
     stats = {
         'fuel_per_month': fuel_diff/days_diff*30,
@@ -37,7 +38,8 @@ def compute_stats_from_fillup_df(df):
         'worst_lp100k': worst_lp100k,
         'worst_mpg': worst_mpg,
         'worst_mpg_imp': worst_mpg_imp,
-        'total_fuel': total_fuel
+        'total_fuel': total_fuel,
+        'current_odo': current_odo
     }
     
     return stats
