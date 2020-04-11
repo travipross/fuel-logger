@@ -4,5 +4,6 @@
     <h1>Home page</h1>
     {% with v = current_user.vehicles.first() %}
     <h3>Primary Vehicle: <a href="{{url_for('logs', vehicle_id=v.id)}}">{{ v.year }} {{ v.make }} {{ v.model }}</a></h3>
+    {{ v.get_stats_df().to_html(classes=['table', 'table-hover'], index=False, columns=['timestamp', 'odometer_km', 'fuel_amt_l', 'dist'], max_rows=20)|safe }}
     {% endwith %}
 {% endblock %}
