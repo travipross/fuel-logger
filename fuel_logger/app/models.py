@@ -1,4 +1,5 @@
 from app import db, login, MPG_LP100K, MPG_IMP_PER_MPG
+from app.utils import compute_stats_from_fillup_df
 from datetime import datetime
 from hashlib import md5 
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -35,6 +36,18 @@ class Vehicle(db.Model):
     @property
     def current_odometer(self):
         return self.fillups.order_by(Fillup.timestamp.desc()).first().odometer_km
+
+
+    def get_stats_df(self):
+        return pd.read_sql(self.fillups.statement, self.fillups.session.bind)
+
+
+    def compute_stats(self):
+        df = self.get_stats_df()
+        stats = compute_stats_from_fillup_df(df)
+        
+        return stats
+
 
     def __repr__(self):
         return "<Vehicle {} {}>".format(self.make, self.model)
