@@ -85,6 +85,12 @@ def bulk_upload(vehicle_id):
             return redirect(request.url)
         if file and file.filename.endswith('.csv'):
             df = pd.read_csv(file)
+            required_cols = {'timestamp', 'odometer_km', 'fuel_amt_l'}
+            print(df.keys())
+            if not set(df.keys()).issuperset(required_cols):
+                missing_keys = required_cols - set(df.keys())
+                flash("Missing columns in CSV: {}".format(missing_keys))
+                return redirect(request.url)
             vehicle.bulk_upload_logs(df)
             try:
                 db.session.commit()
