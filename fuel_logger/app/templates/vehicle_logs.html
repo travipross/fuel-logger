@@ -14,6 +14,7 @@
                 <div class='row'>
                     <div class='col-sm-6'>
                         Total Fuel: {{ stats['total_fuel'] }} L <br>
+                        Total Distance Measured: {{ stats['total_dist'] }} km <br>
                         Current Odometer: {{ stats['current_odo'] }} km
                     </div>
                     <div class='col-sm-6'>
@@ -25,7 +26,7 @@
                         <ul>
                             <li>{{ stats['avg_lp100k'] | round(1) }} L/100 km</li>
                             <li>{{ stats['avg_mpg'] | round(1) }} MPG</li>
-                            <li>{{ stats['avg_mpg_imp'] | round(1) }} MPG (imperial)</li>
+                            <li>{{ stats['avg_mpg_imp'] | round(1) }} MPG (Imperial)</li>
                         </ul>
                     </div>
                     <div class="col-sm-4">
@@ -33,7 +34,7 @@
                         <ul>
                             <li>{{ stats['best_lp100k'] | round(1) }} L/100 km</li>
                             <li>{{ stats['best_mpg'] | round(1) }} MPG</li>
-                            <li>{{ stats['best_mpg_imp'] | round(1) }} MPG (imperial)</li>
+                            <li>{{ stats['best_mpg_imp'] | round(1) }} MPG (Imperial)</li>
                         </ul>
                     </div>
                     <div class="col-sm-4">
@@ -41,7 +42,7 @@
                         <ul>
                             <li>{{ stats['worst_lp100k'] | round(1) }} L/100 km</li>
                             <li>{{ stats['worst_mpg'] | round(1) }} MPG</li>
-                            <li>{{ stats['worst_mpg_imp'] | round(1) }} MPG (imperial)</li>
+                            <li>{{ stats['worst_mpg_imp'] | round(1) }} MPG (Imperial)</li>
                         </ul>
                     </div>
                 </div>
