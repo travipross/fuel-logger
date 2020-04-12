@@ -2,11 +2,6 @@ from app import MPG_IMP_PER_MPG, MPG_LP100K
 
 def compute_stats_from_fillup_df(df):
     if len(df) > 0:
-            
-        df['lp100k'] = df.fuel_amt_l/df.dist * 100
-        df['mpg'] = MPG_LP100K / df.lp100k 
-        df['mpg_imp'] = MPG_IMP_PER_MPG * df.mpg
-        
         last_10 = df.sort_values('timestamp').tail(10)
 
         days_diff = (last_10.timestamp.max() - last_10.timestamp.min()).days
@@ -26,6 +21,7 @@ def compute_stats_from_fillup_df(df):
         worst_mpg_imp = df.mpg_imp.min()
 
         total_fuel = df.fuel_amt_l.sum()
+        total_dist = df.dist.sum()
         current_odo = df.odometer_km.max()
 
         stats = {
@@ -41,6 +37,7 @@ def compute_stats_from_fillup_df(df):
             'worst_mpg': worst_mpg,
             'worst_mpg_imp': worst_mpg_imp,
             'total_fuel': total_fuel,
+            'total_dist': total_dist,
             'current_odo': current_odo
         }
     else:

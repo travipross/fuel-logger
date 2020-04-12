@@ -9,7 +9,7 @@ from sqlalchemy import event
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String, nullable=False)
+    username = db.Column(db.String, nullable=False, index=True)
     email = db.Column(db.String)
     password_hash = db.Column(db.String(128))
 
@@ -26,7 +26,7 @@ class User(UserMixin, db.Model):
 
 class Vehicle(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    owner_id = db.Column(db.Integer, db.ForeignKey(User.id))
+    owner_id = db.Column(db.Integer, db.ForeignKey(User.id), index=True)
     make = db.Column(db.String, nullable=False)
     model = db.Column(db.String, nullable=False)
     year = db.Column(db.Integer)
@@ -39,7 +39,13 @@ class Vehicle(db.Model):
 
 
     def get_stats_df(self):
-        return pd.read_sql(self.fillups.statement, self.fillups.session.bind)
+        df = pd.read_sql(self.fillups.statement, self.fillups.session.bind)
+        df['dist'] = df.odometer_km.diff()
+        df['lp100k'] = df.fuel_amt_l/df.dist * 100
+        df['mpg'] = MPG_LP100K / df.lp100k 
+        df['mpg_imp'] = MPG_IMP_PER_MPG * df.mpg
+
+        return df
 
 
     def compute_stats(self):
@@ -64,15 +70,21 @@ class Vehicle(db.Model):
 
 class Fillup(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    vehicle_id = db.Column(db.Integer, db.ForeignKey(Vehicle.id), nullable=False)
+    vehicle_id = db.Column(db.Integer, db.ForeignKey(Vehicle.id), nullable=False, index=True)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     odometer_km = db.Column(db.Integer, nullable=False)
     fuel_amt_l = db.Column(db.Float, nullable=False)
-    dist = db.Column(db.Integer, default=0)
+    
+    @property
+    def dist(self):
+        last_fillup = Fillup.query.filter_by(vehicle_id=self.vehicle_id).filter(Fillup.timestamp < self.timestamp).order_by(Fillup.timestamp.desc()).first()
+        if last_fillup is None:
+            return 0
+        return self.odometer_km - last_fillup.odometer_km 
 
     @property
     def lp100k(self):
-        return self.fuel_amt_l / self.dist * 100
+        return self.fuel_amt_l / self.dist * 100 if self.dist else -1
 
     @property
     def mpg(self):
@@ -91,12 +103,3 @@ class Fillup(db.Model):
 def load_user(id):
     return User.query.get(int(id))
 
-@event.listens_for(Fillup, 'before_insert')
-def before_insert_function(mapper, connection, target):
-    prev_fillup = Fillup.query.filter_by(vehicle=target.vehicle) \
-                              .order_by(Fillup.timestamp.desc()) \
-                              .first()
-    if prev_fillup:
-        target.dist = target.odometer_km - prev_fillup.odometer_km
-    else:
-        target.dist = target.odometer_km
