@@ -1,6 +1,6 @@
 from app import db, login, MPG_LP100K, MPG_IMP_PER_MPG
 from app.utils import compute_stats_from_fillup_df
-from datetime import datetime
+from datetime import datetime, timedelta
 from hashlib import md5 
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
@@ -49,7 +49,7 @@ class Vehicle(db.Model):
         return stats
 
     def bulk_upload_logs(self, df):
-        df.timestamp = df.timestamp.apply(lambda x: datetime.strptime(x, '%Y-%m-%d'))
+        df.timestamp = df.timestamp.apply(lambda x: datetime.strptime(x, '%Y-%m-%d') + timedelta(hours=12))
         f = lambda x: self.fillups.append(
             Fillup(
                     timestamp=x['timestamp'], 

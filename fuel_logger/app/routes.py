@@ -2,7 +2,7 @@ from app import app, db
 from flask import render_template, redirect, url_for, flash, request, g
 
 from app.models import Fillup, Vehicle, User
-from app.forms import VehicleForm, RegistrationForm, LoginForm, FillupForm, ImportForm
+from app.forms import VehicleForm, RegistrationForm, LoginForm, FillupForm, ImportForm, DeleteAllForm
 from flask_login import login_required, current_user, login_user, logout_user
 from werkzeug.urls import url_parse
 from werkzeug.exceptions import HTTPException
@@ -93,6 +93,25 @@ def bulk_upload(vehicle_id):
             return redirect(url_for("logs", vehicle_id=vehicle_id))
     
     return render_template('upload.html', form=form)
+
+
+@app.route("/logs/<vehicle_id>/bulk_delete", methods=['GET', 'POST'])
+def bulk_delete(vehicle_id):
+    vehicle = Vehicle.query.get_or_404(vehicle_id)
+    form = DeleteAllForm()
+    if form.validate_on_submit():
+        if form.confirm.data:
+            for f in vehicle.fillups:
+                db.session.delete(f)
+            try:
+                db.session.commit()
+                flash('All fuel logs deleted!')
+            except:
+                db.session.rollback()
+                flash('Deletion failed!')
+        
+        return redirect(url_for('logs', vehicle_id=vehicle_id))
+    return render_template('bulk_delete.html', form=form)
 
 @app.route("/logs/delete/<log_id>", methods=['DELETE'])
 def delete_log(log_id):

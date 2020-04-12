@@ -50,3 +50,7 @@ class FillupForm(FlaskForm):
 class ImportForm(FlaskForm):
     file_obj = FileField('Choose File', validators=[DataRequired()])
     submit = SubmitField('Begin Upload')
+
+class DeleteAllForm(FlaskForm):
+    confirm = BooleanField('Delete all logs for this vehicle?')
+    submit = SubmitField('Submit')

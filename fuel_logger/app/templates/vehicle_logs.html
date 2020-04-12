@@ -4,6 +4,9 @@
 {% block app_content %}
     <div class='row'>
         <h1>{{ vehicle.owner.username }}'s {% if vehicle.year %}{{ vehicle.year }}{% endif %} {{ vehicle.make }} {{ vehicle.model }}</h1>
+        <a href={{url_for('bulk_delete', vehicle_id=vehicle.id)}}>Delete All</a><br>
+        <a href={{url_for('bulk_upload', vehicle_id=vehicle.id)}}>Import from CSV</a>
+        <hr>
     </div>
     <div class='row'>
         {% with stats = vehicle.compute_stats() %}
@@ -57,7 +60,7 @@
         <h3>Fill-ups:</h3>
         {% with fillups = vehicle.fillups.all() %}
         {% if fillups %}
-        {% for fillup in fillups %}
+        {% for fillup in fillups|sort(attribute='timestamp', reverse=True) %}
             {% include '_fillup.html' %}
         {% endfor %}
         {% else %}
