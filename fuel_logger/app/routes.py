@@ -58,6 +58,11 @@ def register():
 @app.route("/logs/<vehicle_id>", methods=['GET', 'POST'])
 @login_required
 def logs(vehicle_id):
+    v = Vehicle.query.get_or_404(vehicle_id)
+    if v.owner != current_user:
+        return render_template("403.html", message="You don't have access to these logs")
+    g.vehicle = v
+
     form = FillupForm()
     if form.validate_on_submit():
         f = Fillup(odometer_km=form.odometer.data, fuel_amt_l=form.fuel.data, vehicle=v)
@@ -65,12 +70,7 @@ def logs(vehicle_id):
         db.session.commit()
         flash('Your fuel log has been updated!')
         return redirect(url_for('logs', vehicle_id=vehicle_id))
-
     
-    v = Vehicle.query.get_or_404(vehicle_id)
-    if v.owner != current_user:
-        return render_template("403.html", message="You don't have access to these logs")
-    g.vehicle = v
     page = request.args.get('page', 1, type=int)
     fillups = v.fillups.order_by(Fillup.timestamp.desc()).paginate(page, app.config['LOGS_PER_PAGE'], False)
     next_url = url_for('logs', vehicle_id=v.id, page=fillups.next_num) if fillups.has_next else None

@@ -9,6 +9,12 @@
         <hr>
     </div>
     <div class='row'>
+        {% if form %}
+            <h3>Add a new fill-up log entry:</h3>
+            {{ wtf.quick_form(form)}}
+        {% endif %}
+    </div>
+    <div class='row'>
         {% with stats = vehicle.compute_stats() %}
             {% if stats %}
                 <div class='row'>
@@ -53,17 +59,14 @@
         {% endwith %}
     </div>
     <div class='row'>
-        {% if form %}
-            <h3>Add a new fill-up log entry:</h3>
-            {{ wtf.quick_form(form)}}
-        {% endif %}
-    </div>
-    <div class='row'>
         <h3>Fill-ups{% if page %} (Page {{ page }} of {{ pages }}){% endif %}:</h3>
         {% if fillups %}
-            {% for fillup in fillups|sort(attribute='timestamp', reverse=True) %}
-                {% include '_fillup.html' %}
-            {% endfor %}
+            <table class="table table-hover table-responsive">
+                {% for fillup in fillups|sort(attribute='timestamp', reverse=True) %}
+                    {% include '_fillup.html' %}
+                {% endfor %}
+            </table>
+
         {% else %}
             No logs for this vehicle
         {% endif %}

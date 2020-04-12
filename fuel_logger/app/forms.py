@@ -1,10 +1,12 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, PasswordField, BooleanField, FloatField, FileField
 from wtforms.validators import DataRequired, EqualTo, Email, ValidationError
+from wtforms.fields.html5 import DateField, TimeField
 from app.models import User, Vehicle, Fillup
 from flask import g
 from sqlalchemy import func
 from app import db
+from datetime import datetime
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -38,12 +40,14 @@ class VehicleForm(FlaskForm):
 
 
 class FillupForm(FlaskForm):
+    date = DateField('Fillup Date', default=datetime.now)
+    time = TimeField("Fillup Time", default=datetime.now)
     fuel = FloatField('Fuel Amount (L)', validators=[DataRequired()])
     odometer = IntegerField('Odometer Reading (km)', validators=[DataRequired()])
     submit = SubmitField('Submit Log')
 
     def validate_odometer(self, odometer):
-        last_odo = db.session.query(func.max(Fillup.odometer_km)).scalar() or 0
+        last_odo = db.session.query(func.max(Fillup.odometer_km)).filter_by(vehicle_id=g.vehicle.id).scalar() or 0
         if odometer.data <= last_odo:
             raise ValidationError("Odometer value is less than a previous record.")
 
