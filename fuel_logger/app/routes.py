@@ -2,10 +2,11 @@ from app import app, db
 from flask import render_template, redirect, url_for, flash, request, g
 
 from app.models import Fillup, Vehicle, User
-from app.forms import VehicleForm, RegistrationForm, LoginForm, FillupForm
+from app.forms import VehicleForm, RegistrationForm, LoginForm, FillupForm, ImportForm
 from flask_login import login_required, current_user, login_user, logout_user
 from werkzeug.urls import url_parse
 from werkzeug.exceptions import HTTPException
+import pandas as pd
 
 @app.route("/")
 @app.route("/index")
@@ -69,6 +70,29 @@ def logs(vehicle_id):
         flash('Your fuel log has been updated!')
         return redirect(url_for('logs', vehicle_id=vehicle_id))
     return render_template('vehicle_logs.html', vehicle=v, form=form)
+
+@app.route("/logs/<vehicle_id>/bulk_upload", methods=['GET', 'POST'])
+def bulk_upload(vehicle_id):
+    vehicle = Vehicle.query.get_or_404(vehicle_id)
+    form = ImportForm()
+    if request.method == "POST":
+        if 'file_obj' not in request.files:
+            flash("No file detected")
+            return redirect(request.url)
+        file = request.files['file_obj']
+        if file.filename == '':
+            flash("no file selected")
+            return redirect(request.url)
+        if file and file.filename.endswith('.csv'):
+            df = pd.read_csv(file)
+            vehicle.bulk_upload_logs(df)
+            try:
+                db.session.commit()
+            except:
+                db.session.rollback()
+            return redirect(url_for("logs", vehicle_id=vehicle_id))
+    
+    return render_template('upload.html', form=form)
 
 @app.route("/logs/delete/<log_id>", methods=['DELETE'])
 def delete_log(log_id):

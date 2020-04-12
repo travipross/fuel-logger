@@ -48,6 +48,16 @@ class Vehicle(db.Model):
         
         return stats
 
+    def bulk_upload_logs(self, df):
+        df.timestamp = df.timestamp.apply(lambda x: datetime.strptime(x, '%Y-%m-%d'))
+        f = lambda x: self.fillups.append(
+            Fillup(
+                    timestamp=x['timestamp'], 
+                    odometer_km=x['odometer_km'], 
+                    fuel_amt_l=x['fuel_amt_l']
+                )
+            )
+        df.apply(f, axis=1)
 
     def __repr__(self):
         return "<Vehicle {} {}>".format(self.make, self.model)

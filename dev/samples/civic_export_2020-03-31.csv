@@ -1,4 +1,4 @@
-date,odometer,fuel
+timestamp,odometer_km,fuel_amt_l
 2017-08-31,530,43.5
 2017-09-03,748,18.0
 2017-09-15,1044,29.8

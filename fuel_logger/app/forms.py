@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, SubmitField, PasswordField, BooleanField, FloatField
+from wtforms import StringField, IntegerField, SubmitField, PasswordField, BooleanField, FloatField, FileField
 from wtforms.validators import DataRequired, EqualTo, Email, ValidationError
 from app.models import User, Vehicle, Fillup
 from flask import g
@@ -46,3 +46,7 @@ class FillupForm(FlaskForm):
         last_odo = db.session.query(func.max(Fillup.odometer_km)).scalar() or 0
         if odometer.data <= last_odo:
             raise ValidationError("Odometer value is less than a previous record.")
+
+class ImportForm(FlaskForm):
+    file_obj = FileField('Choose File', validators=[DataRequired()])
+    submit = SubmitField('Begin Upload')
