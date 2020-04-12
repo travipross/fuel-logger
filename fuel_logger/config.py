@@ -8,3 +8,4 @@ class Config():
     SECRET_KEY=os.getenv('SECRET_KEY', 'maud')
     SQLALCHEMY_DATABASE_URI=os.getenv('DATABASE_URL', 'sqlite:///'+os.path.join(basedir, 'app.db'))
     SQLALCHEMY_TRACK_MODIFICATIONS=False
+    LOGS_PER_PAGE = 5
