@@ -50,5 +50,15 @@
 {% block scripts %}
     {{ super() }}
     {{ moment.include_moment() }}
+
+    <script>
+        function delete_log(srcElem){
+            $.ajax({
+                url: '/logs/delete/'+$(srcElem).selector.split('log')[1],
+                type: 'DELETE'
+            }).success(
+                location.reload()
+            )
+        }
+    </script>
 {% endblock %}
-    

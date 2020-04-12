@@ -70,6 +70,18 @@ def logs(vehicle_id):
         return redirect(url_for('logs', vehicle_id=vehicle_id))
     return render_template('vehicle_logs.html', vehicle=v, form=form)
 
+@app.route("/logs/delete/<log_id>", methods=['DELETE'])
+def delete_log(log_id):
+    l = Fillup.query.get_or_404(log_id)
+    try:
+        db.session.delete(l)
+        db.session.commit()
+    except:
+        db.session.rollback()
+        flash("There was a problem deleting this log")
+        return "", 500
+    flash("Your fuel log has been deleted")
+    return "", 200
 
 @app.route("/add_vehicle", methods=["GET", "POST"])
 @login_required

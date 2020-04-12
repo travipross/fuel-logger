@@ -7,6 +7,7 @@
     </div>
     <div class='row'>
         {% with stats = vehicle.compute_stats() %}
+            {% if stats %}
                 <div class='row'>
                     <div class='col-sm-6'>
                         Total Fuel: {{ stats['total_fuel'] }} L <br>
@@ -41,6 +42,9 @@
                         </ul>
                     </div>
                 </div>
+            {% else %}
+                No vehicle stats!
+            {% endif %}
         {% endwith %}
     </div>
     <div class='row'>
