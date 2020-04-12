@@ -2,6 +2,9 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
+    <h3>Upload Logs</h3>
+    Upload your logs in CSV format.
+    CSV must include 3 columns: 'timestamp', 'odometer_km', and 'fuel_amt_l'. Timestamp must be in "YY-MM-DD" format. 
     {% if form %}
         {{ wtf.quick_form(form) }}
     {% endif %}

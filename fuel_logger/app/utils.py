@@ -24,6 +24,8 @@ def compute_stats_from_fillup_df(df):
         total_dist = df.dist.sum()
         current_odo = df.odometer_km.max()
 
+        total_logs = len(df)
+
         stats = {
             'fuel_per_month': fuel_diff/days_diff*30 if days_diff > 0 else None,
             'dist_per_month': odo_diff/days_diff*30 if days_diff > 0 else None,
@@ -38,7 +40,8 @@ def compute_stats_from_fillup_df(df):
             'worst_mpg_imp': worst_mpg_imp,
             'total_fuel': total_fuel,
             'total_dist': total_dist,
-            'current_odo': current_odo
+            'current_odo': current_odo,
+            'total_logs': total_logs
         }
     else:
         stats = None
