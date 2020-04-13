@@ -78,9 +78,7 @@ class Fillup(db.Model):
     @property
     def dist(self):
         last_fillup = Fillup.query.filter_by(vehicle_id=self.vehicle_id).filter(Fillup.timestamp < self.timestamp).order_by(Fillup.timestamp.desc()).first()
-        if last_fillup is None:
-            return 0
-        return self.odometer_km - last_fillup.odometer_km 
+        return self.odometer_km - last_fillup.odometer_km if last_fillup else None
 
     @property
     def lp100k(self):
@@ -88,11 +86,11 @@ class Fillup(db.Model):
 
     @property
     def mpg(self):
-        return MPG_LP100K/self.lp100k
+        return MPG_LP100K/self.lp100k if self.lp100k else None
 
     @property
     def mpg_imp(self):
-        return self.mpg*MPG_IMP_PER_MPG
+        return self.mpg*MPG_IMP_PER_MPG if self.lp100k else None
 
 
     def __repr__(self):

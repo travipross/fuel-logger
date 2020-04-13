@@ -1,5 +1,5 @@
 <span id=log{{fillup.id}}>
-    <div class="modal fade" id="exampleModal{{fillup.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="fillupModal{{fillup.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -23,16 +23,16 @@
                 <b>{{ moment(fillup.timestamp).format('LLL') }}:</b><br>
                 Fuel: {{ fillup.fuel_amt_l }} L<br>
                 Odometer: {{ fillup.odometer_km }} km<br>
-                Distance: {{ fillup.dist }} km
+                Distance: {{ fillup.dist if fillup.dist != None else "---"  }} km
             </td>
             <td>
                 <b>Fuel Economy:</b><br>
-                {{ fillup.lp100k|round(1) }} L/100 km<br>
-                {{ fillup.mpg|round(1) }} MPG (US)<br>
-                {{ fillup.mpg_imp|round(1) }} MPG (Imp)
+                {{ fillup.lp100k|round(1) if fillup.lp100k != None else "---"}} L/100 km<br>
+                {{ fillup.mpg|round(1) if fillup.lp100k != None else "---" }} MPG (US)<br>
+                {{ fillup.mpg_imp|round(1) if fillup.lp100k != None else "---" }} MPG (Imp)
             </td>
             <td>
-                <a href=javascript:$(exampleModal{{fillup.id}}).modal()>Delete</a>
+                <a href=javascript:$(fillupModal{{fillup.id}}).modal()>Delete</a>
             </td>
         </tr>
 </span>
