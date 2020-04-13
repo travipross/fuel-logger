@@ -29,17 +29,17 @@
     </div>
     <div class='row'>
         {% if form %}
-            <div class="col-sm-6">
-                <h3>Add a new fill-up log entry:</h3>
-                {{ wtf.quick_form(form)}}
-            </div>
+        <div class="col-sm-6">
+            <h3>Add a new fill-up log entry:</h3>
+            {{ wtf.quick_form(form)}}
+        </div>
         {% endif %}
         <div class="col-sm-6">
             {% with stats = vehicle.compute_stats() %}
                 {% if stats %}
-                    <h3>Fuel Stats</h3>
                     <div class='row'>
-                        <div class='col-sm-6'>
+                        <div class='col' style="text-align:center;">
+                            <h3>Fuel Stats</h3>
                             Total Fuel: {{ stats['total_fuel'] }} L <br>
                             Total Distance Measured: {{ stats['total_dist'] }} km <br>
                             Current Odometer: {{ stats['current_odo'] }} km <br>
@@ -48,7 +48,7 @@
                     </div>
                     <hr>
                     <div class='row'>
-                        <div class="col-md-4">
+                        <div class="col-xs-4">
                             <div class='row' style="text-align:center;">
                                 <h4>Worst</h4>
                             </div>
@@ -60,7 +60,8 @@
                                     min: 0,
                                     max: 40,
                                     value: 0,
-                                    // gaugeColor: 'red',
+                                    gaugeColor: 'red',
+                                    viewBox: "0, 0 100 85",
                                     label: function(value){
                                         return (Math.round(value*10)/10).toFixed(1) + ' MPG'
                                     }
@@ -75,7 +76,7 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-xs-4">
                             <div class='row' style="text-align:center;">
                                 <h4>Average</h4>
                             </div>
@@ -88,6 +89,7 @@
                                     max: 40,
                                     value: 0,
                                     gaugeColor: 'red',
+                                    viewBox: "0, 0 100 85",
                                     label: function(value){
                                         return (Math.round(value*10)/10).toFixed(1) + ' MPG'
                                     }
@@ -102,7 +104,7 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-xs-4">
                             <div class='row' style="text-align:center;">
                                 <h4>Best</h4>
                             </div>
@@ -115,6 +117,7 @@
                                     max: 40,
                                     value: 0,
                                     gaugeColor: 'red',
+                                    viewBox: "0, 0 100 85",
                                     label: function(value){
                                         return (Math.round(value*10)/10).toFixed(1) + ' MPG'
                                     }
