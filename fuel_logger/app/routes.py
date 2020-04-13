@@ -2,7 +2,7 @@ from app import app, db
 from flask import render_template, redirect, url_for, flash, request, g
 
 from app.models import Fillup, Vehicle, User
-from app.forms import VehicleForm, RegistrationForm, LoginForm, FillupForm, ImportForm, DeleteAllForm
+from app.forms import VehicleForm, RegistrationForm, LoginForm, FillupForm, ImportForm
 from flask_login import login_required, current_user, login_user, logout_user
 from werkzeug.urls import url_parse
 from werkzeug.exceptions import HTTPException
@@ -76,7 +76,7 @@ def logs(vehicle_id):
     next_url = url_for('logs', vehicle_id=v.id, page=fillups.next_num) if fillups.has_next else None
     prev_url = url_for('logs', vehicle_id=v.id, page=fillups.prev_num) if fillups.has_prev else None
 
-    return render_template('vehicle_logs.html', vehicle=v, form=form, fillups=fillups.items, next_url=next_url, prev_url=prev_url, page=page, pages=fillups.pages)
+    return render_template('vehicle_logs.html', vehicle=v, form=form, fillups=fillups.items, next_url=next_url, prev_url=prev_url, page=page, pages=fillups.pages or 1)
 
 @app.route("/logs/<vehicle_id>/bulk_upload", methods=['GET', 'POST'])
 def bulk_upload(vehicle_id):
@@ -108,23 +108,20 @@ def bulk_upload(vehicle_id):
     return render_template('upload.html', form=form)
 
 
-@app.route("/logs/<vehicle_id>/bulk_delete", methods=['GET', 'POST'])
+@app.route("/logs/<vehicle_id>/bulk_delete", methods=['DELETE'])
 def bulk_delete(vehicle_id):
     vehicle = Vehicle.query.get_or_404(vehicle_id)
-    form = DeleteAllForm()
-    if form.validate_on_submit():
-        if form.confirm.data:
-            for f in vehicle.fillups:
-                db.session.delete(f)
-            try:
-                db.session.commit()
-                flash('All fuel logs deleted!')
-            except:
-                db.session.rollback()
-                flash('Deletion failed!')
-        
-        return redirect(url_for('logs', vehicle_id=vehicle_id))
-    return render_template('bulk_delete.html', form=form)
+    for f in vehicle.fillups:
+        db.session.delete(f)
+    try:
+        db.session.commit()
+    except:
+        db.session.rollback()
+        flash('There was a problem deleting your logs for this vehicle')
+        return "", 500
+    flash("All your logs have been deleted for this vehicle")
+    return "", 200
+
 
 @app.route("/logs/delete/<log_id>", methods=['DELETE'])
 def delete_log(log_id):

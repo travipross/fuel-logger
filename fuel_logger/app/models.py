@@ -84,7 +84,7 @@ class Fillup(db.Model):
 
     @property
     def lp100k(self):
-        return self.fuel_amt_l / self.dist * 100 if self.dist else -1
+        return self.fuel_amt_l / self.dist * 100 if self.dist else None
 
     @property
     def mpg(self):

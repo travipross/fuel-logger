@@ -62,5 +62,16 @@
             })
         }
     </script>
+    <script>
+        function delete_all_logs(vehicle_id){
+            $.ajax({
+                url: '/logs/'+vehicle_id+'/bulk_delete',
+                type: 'DELETE',
+                success: function(){
+                    setTimeout(function(){location.reload();}, 100)
+                }
+            })
+        }
+    </script>
 
 {% endblock %}
