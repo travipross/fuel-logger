@@ -22,7 +22,7 @@ def upgrade():
     op.create_index(op.f('ix_user_username'), 'user', ['username'], unique=False)
     with op.batch_alter_table('vehicle') as batch_op:
         batch_op.add_column(sa.Column('is_favourite', sa.Boolean(), nullable=True))
-    op.create_index('idx_unq_fav_vehicle', 'vehicle', ['owner_id', 'is_favourite'], unique=True, sqlite_where=sa.text('is_favourite > 0'), postgresql_where=sa.text('is_favourite > 0'))
+    op.create_index('idx_unq_fav_vehicle', 'vehicle', ['owner_id', 'is_favourite'], unique=True, sqlite_where=sa.text('is_favourite > 0'), postgresql_where=sa.text('is_favourite = true'))
     op.create_index(op.f('ix_vehicle_owner_id'), 'vehicle', ['owner_id'], unique=False)
     # ### end Alembic commands ###
 
