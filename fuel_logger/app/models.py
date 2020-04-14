@@ -81,7 +81,7 @@ class Vehicle(db.Model):
         return stats
 
     def bulk_upload_logs(self, df):
-        df.timestamp = df.timestamp.apply(lambda x: datetime.strptime(x, '%Y-%m-%d') + timedelta(hours=12))
+        df.timestamp = df.timestamp.apply(lambda x: datetime.strptime(x.split(' ')[0], '%Y-%m-%d') + timedelta(hours=12))
         f = lambda x: self.fillups.append(
             Fillup(
                     timestamp=x['timestamp'], 
