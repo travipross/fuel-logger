@@ -42,6 +42,13 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    def set_favourite_vehicle(self, vehicle):
+        for v in self.vehicles.filter_by(is_favourite=True):
+            v.is_favourite = False
+        db.session.flush()
+        vehicle.is_favourite = True
+        db.session.commit()
+
 class Vehicle(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     owner_id = db.Column(db.Integer, db.ForeignKey(User.id), index=True)

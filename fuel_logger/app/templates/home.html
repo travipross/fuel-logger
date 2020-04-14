@@ -2,7 +2,7 @@
 
 {% block app_content %}
     <h1>Home page</h1>
-    {% with v = current_user.vehicles.first() %}
+    {% with v = current_user.vehicles.filter_by(is_favourite=True).first() or current_user.vehicles.first() %}
     {% if v %}
         <h3>Primary Vehicle: <a href="{{url_for('logs', vehicle_id=v.id)}}">{{ v.year }} {{ v.make }} {{ v.model }}</a></h3>
         <div class='table-responsive'>

@@ -187,3 +187,14 @@ def reset_password(token):
         flash('Your password has been reset.')
         return redirect(url_for('login'))
     return render_template('reset_password.html', form=form)
+
+
+@app.route('/set_fav_vehicle/<user_id>/<vehicle_id>')
+def set_fav_vehicle(user_id, vehicle_id):
+    user = User.query.get(user_id)
+    vehicle = user.vehicles.filter_by(id=vehicle_id).first()
+    if not user or not vehicle:
+        flash("invalid user/vehicle")
+    user.set_favourite_vehicle(vehicle)
+    db.session.commit()
+    return redirect(url_for('garage', user_id=user_id))
