@@ -5,7 +5,7 @@ from hashlib import md5
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 import pandas as pd
-from sqlalchemy import event
+from sqlalchemy import event, and_
 from time import time
 import jwt
 from app import app
@@ -48,6 +48,7 @@ class Vehicle(db.Model):
     make = db.Column(db.String, nullable=False)
     model = db.Column(db.String, nullable=False)
     year = db.Column(db.Integer)
+    is_favourite = db.Column(db.Boolean, default=False)
 
     fillups = db.relationship('Fillup', backref='vehicle', lazy='dynamic')
 
@@ -114,6 +115,9 @@ class Fillup(db.Model):
     def __repr__(self):
         return "<Fillup date={}, vehicle={}, fuel_L={}, odo_km={}>".format(self.timestamp, self.vehicle.model, self.fuel_amt_l, self.odometer_km)
 
+
+idx_unq_fav_vehicle = db.Index('idx_unq_fav_vehicle', Vehicle.owner_id, Vehicle.is_favourite, sqlite_where=and_(Vehicle.is_favourite > 0), unique=True)
+# idx_unq_fav_vehicle = db.Index('idx_unq_fav_vehicle', Vehicle.owner_id, Vehicle.is_favourite, postgresql_where=Vehicle.is_favourite > 0, unique=True)
 
 @login.user_loader
 def load_user(id):
