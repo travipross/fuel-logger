@@ -1,6 +1,5 @@
 from app import app, db
-from flask import render_template, redirect, url_for, flash, request, g
-
+from flask import render_template, redirect, url_for, flash, request, g, Response
 from app.models import Fillup, Vehicle, User
 from app.forms import VehicleForm, RegistrationForm, LoginForm, FillupForm, ImportForm, ResetPasswordRequestForm, ResetPasswordForm
 from app.email import send_password_reset_email
@@ -108,6 +107,17 @@ def bulk_upload(vehicle_id):
     
     return render_template('upload.html', form=form)
 
+
+@app.route('/logs/<vehicle_id>/bulk_download')
+def bulk_download(vehicle_id):
+    v = Vehicle.query.get_or_404(vehicle_id)
+    df = v.get_stats_df()
+    csv = df.to_csv(index=False, columns=["timestamp", "odometer_km", "fuel_amt_l", "dist", "lp100k", "mpg", "mpg_imp"])
+    return Response(
+        csv,
+        mimetype='text/csv',
+        headers={"Content-disposition": "attachment; filename=fuel_logs_{}.csv".format(v.model)}
+    )
 
 @app.route("/logs/<vehicle_id>/bulk_delete", methods=['DELETE'])
 def bulk_delete(vehicle_id):
