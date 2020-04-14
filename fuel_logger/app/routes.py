@@ -2,7 +2,8 @@ from app import app, db
 from flask import render_template, redirect, url_for, flash, request, g
 
 from app.models import Fillup, Vehicle, User
-from app.forms import VehicleForm, RegistrationForm, LoginForm, FillupForm, ImportForm
+from app.forms import VehicleForm, RegistrationForm, LoginForm, FillupForm, ImportForm, ResetPasswordRequestForm
+from app.email import send_password_reset_email
 from flask_login import login_required, current_user, login_user, logout_user
 from werkzeug.urls import url_parse
 from werkzeug.exceptions import HTTPException
@@ -157,3 +158,16 @@ def garage(user_id):
         return render_template('403.html', message="You don't have access to this garage."), 403
     return render_template('garage.html', user=u)
 
+
+@app.route('/reset_password_request', methods=['GET', 'POST'])
+def reset_password_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = ResetPasswordRequestForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            send_password_reset_email(user)
+        flash('Check your email for instructions to reset your password')
+        return redirect(url_for('login'))
+    return render_template('reset_password_request.html', form=form)

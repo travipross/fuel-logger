@@ -54,3 +54,8 @@ class FillupForm(FlaskForm):
 class ImportForm(FlaskForm):
     file_obj = FileField('Choose File', validators=[DataRequired()])
     submit = SubmitField('Begin Upload')
+
+
+class ResetPasswordRequestForm(FlaskForm):
+    email = StringField('Enter your email address', validators=[DataRequired(), Email()])
+    submit = SubmitField('Send reset email')
