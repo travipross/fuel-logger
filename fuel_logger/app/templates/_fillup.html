@@ -23,7 +23,7 @@
                 <b>{{ moment(fillup.timestamp).format('LLL') }}:</b><br>
                 Fuel: {{ fillup.fuel_amt_l }} L<br>
                 Odometer: {{ fillup.odometer_km }} km<br>
-                Distance: {{ fillup.dist if fillup.dist != None else "---"  }} km
+                Distance: {{ fillup.dist|int() if fillup.dist != None else "---"  }} km
             </td>
             <td>
                 <b>Fuel Economy:</b><br>

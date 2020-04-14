@@ -24,7 +24,8 @@
     <div class='row'>
         <h1>{{ vehicle.owner.username }}'s {% if vehicle.year %}{{ vehicle.year }}{% endif %} {{ vehicle.make }} {{ vehicle.model }}</h1>
         <a href=javascript:$(vehicleModal{{vehicle.id}}).modal()>Delete All</a><br>
-        <a href={{url_for('bulk_upload', vehicle_id=vehicle.id)}}>Import from CSV</a>
+        <a href={{url_for('bulk_upload', vehicle_id=vehicle.id)}}>Import from CSV</a><br>
+        <a href={{url_for('bulk_download', vehicle_id=vehicle.id)}}>Export to CSV</a>
         <hr>
     </div>
     <div class='row'>
@@ -40,9 +41,9 @@
                     <div class='row'>
                         <div class='col' style="text-align:center;">
                             <h3>Fuel Stats</h3>
-                            Total Fuel: {{ stats['total_fuel'] }} L <br>
-                            Total Distance Measured: {{ stats['total_dist'] }} km <br>
-                            Current Odometer: {{ stats['current_odo'] }} km <br>
+                            Total Fuel: {{ stats['total_fuel']|round(1) }} L <br>
+                            Total Distance Measured: {{ stats['total_dist']|int()}} km <br>
+                            Current Odometer: {{ stats['current_odo']|int() }} km <br>
                             Total Logs: {{ stats['total_logs'] }}
                         </div>
                     </div>
