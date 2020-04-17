@@ -1,4 +1,4 @@
-from app import app, db
+from app import app, db, KM_PER_MILE
 from flask import render_template, redirect, url_for, flash, request, g, Response
 from app.models import Fillup, Vehicle, User
 from app.forms import VehicleForm, RegistrationForm, LoginForm, FillupForm, ImportForm, ResetPasswordRequestForm, ResetPasswordForm
@@ -65,7 +65,8 @@ def logs(vehicle_id):
 
     form = FillupForm()
     if form.validate_on_submit():
-        f = Fillup(odometer_km=form.odometer.data, fuel_amt_l=form.fuel.data, vehicle=v)
+        odo_converted = int(form.odometer.data*KM_PER_MILE) if v.odo_unit == 'mi' else form.odometer.data
+        f = Fillup(odometer_km=odo_converted, fuel_amt_l=form.fuel.data, vehicle=v)
         db.session.add(f)
         db.session.commit()
         flash('Your fuel log has been updated!')
@@ -112,7 +113,7 @@ def bulk_upload(vehicle_id):
 def bulk_download(vehicle_id):
     v = Vehicle.query.get_or_404(vehicle_id)
     df = v.get_stats_df()
-    csv = df.to_csv(index=False, columns=["timestamp", "odometer_km", "fuel_amt_l", "dist", "lp100k", "mpg", "mpg_imp"])
+    csv = df.to_csv(index=False, columns=["timestamp", "odometer_km", "fuel_amt_l", "dist_km", "lp100k", "mpg", "mpg_imp"])
     return Response(
         csv,
         mimetype='text/csv',
@@ -152,7 +153,7 @@ def delete_log(log_id):
 def add_vehicle():
     form = VehicleForm()
     if form.validate_on_submit():
-        v = Vehicle(make=form.make.data, model=form.model.data, year=form.year.data)
+        v = Vehicle(make=form.make.data, model=form.model.data, year=form.year.data, odo_unit=form.odo_unit.data)
         current_user.vehicles.append(v)
         db.session.commit()
         flash('Your vehicle has been added')

@@ -1,12 +1,14 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, SubmitField, PasswordField, BooleanField, FloatField, FileField
+from wtforms import StringField, IntegerField, SubmitField, PasswordField, BooleanField, FloatField, FileField, SelectField
 from wtforms.validators import DataRequired, EqualTo, Email, ValidationError
 from wtforms.fields.html5 import DateField, TimeField
 from app.models import User, Vehicle, Fillup
 from flask import g
 from sqlalchemy import func
-from app import db
+from app import db, app
 from datetime import datetime
+from app import KM_PER_MILE
+
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -36,6 +38,7 @@ class VehicleForm(FlaskForm):
     make = StringField('Vehicle Make', validators=[DataRequired()])
     model = StringField('Vehicle Model', validators=[DataRequired()])
     year = IntegerField('Vehicle Year', validators=[DataRequired()])
+    odo_unit = SelectField('Odometer Unit', validators=[DataRequired()], choices=[('km', "Default (km)"), ('mi','Freedom (mi)')], default='km')
     submit = SubmitField('Submit Vehicle')
 
 
@@ -43,12 +46,13 @@ class FillupForm(FlaskForm):
     date = DateField('Fillup Date', default=datetime.now)
     time = TimeField("Fillup Time", default=datetime.now)
     fuel = FloatField('Fuel Amount (L)', validators=[DataRequired()])
-    odometer = IntegerField('Odometer Reading (km)', validators=[DataRequired()])
+    odometer = IntegerField('Odometer Reading (in your vehicle\'s unit)', validators=[DataRequired()])
     submit = SubmitField('Submit Log')
 
     def validate_odometer(self, odometer):
         last_odo = db.session.query(func.max(Fillup.odometer_km)).filter_by(vehicle_id=g.vehicle.id).scalar() or 0
-        if odometer.data <= last_odo:
+        odo_val_converted = int(odometer.data*KM_PER_MILE) if g.vehicle.odo_unit == 'mi' else odometer.data
+        if odo_val_converted <= last_odo:
             raise ValidationError("Odometer value is less than a previous record.")
 
 class ImportForm(FlaskForm):

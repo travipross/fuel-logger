@@ -1,4 +1,4 @@
-from app import MPG_IMP_PER_MPG, MPG_LP100K
+from app import MPG_IMP_PER_MPG, MPG_LP100K, KM_PER_MILE
 
 def compute_stats_from_fillup_df(df):
     if len(df) > 0:
@@ -21,7 +21,7 @@ def compute_stats_from_fillup_df(df):
         worst_mpg_imp = df.mpg_imp.min()
 
         total_fuel = df.fuel_amt_l.sum()
-        total_dist = df.dist.sum()
+        total_dist_km = df.dist_km.sum()
         current_odo = df.odometer_km.max()
 
         total_logs = len(df)
@@ -39,8 +39,10 @@ def compute_stats_from_fillup_df(df):
             'worst_mpg': worst_mpg,
             'worst_mpg_imp': worst_mpg_imp,
             'total_fuel': total_fuel,
-            'total_dist': total_dist,
+            'total_dist_km': total_dist_km,
+            'total_dist_mi': total_dist_km/KM_PER_MILE,
             'current_odo': current_odo,
+            'current_odo_mi': current_odo/KM_PER_MILE,
             'total_logs': total_logs
         }
     else:

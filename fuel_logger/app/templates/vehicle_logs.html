@@ -22,7 +22,7 @@
         </div>
     </div>
     <div class='row'>
-        <h1>{{ vehicle.owner.username }}'s {% if vehicle.year %}{{ vehicle.year }}{% endif %} {{ vehicle.make }} {{ vehicle.model }}</h1>
+        <h1>{{ vehicle.owner.username }}'s {% if vehicle.year %}{{ vehicle.year }}{% endif %} {{ vehicle.make }} {{ vehicle.model }}{% if vehicle.odo_unit == 'mi' %} <span class='h3'>(Odometer unit: Miles){% endif %}</span></h1>
         <a href=javascript:$(vehicleModal{{vehicle.id}}).modal()>Delete All</a><br>
         <a href={{url_for('bulk_upload', vehicle_id=vehicle.id)}}>Import from CSV</a><br>
         <a href={{url_for('bulk_download', vehicle_id=vehicle.id)}}>Export to CSV</a>
@@ -42,8 +42,8 @@
                         <div class='col' style="text-align:center;">
                             <h3>Fuel Stats</h3>
                             Total Fuel: {{ stats['total_fuel']|round(1) }} L <br>
-                            Total Distance Measured: {{ stats['total_dist']|int()}} km <br>
-                            Current Odometer: {{ stats['current_odo']|int() }} km <br>
+                            Total Distance Measured: {% if vehicle.odo_unit == 'mi' %}{{ stats['total_dist_mi']|int()}} mi{% else %}{{ stats['total_dist_km']|int()}} km{% endif %}<br>
+                            Current Odometer: {% if vehicle.odo_unit == 'mi' %}{{ stats['current_odo_mi']|int() }} mi{% else %}{{ stats['current_odo']|int() }} km{% endif %} <br>
                             Total Logs: {{ stats['total_logs'] }}
                         </div>
                     </div>

@@ -1,4 +1,4 @@
-from app import db, login, MPG_LP100K, MPG_IMP_PER_MPG
+from app import db, login, MPG_LP100K, MPG_IMP_PER_MPG, KM_PER_MILE
 from app.utils import compute_stats_from_fillup_df
 from datetime import datetime, timedelta
 from hashlib import md5 
@@ -15,7 +15,6 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String, nullable=False, index=True)
     email = db.Column(db.String)
     password_hash = db.Column(db.String(128))
-
     vehicles = db.relationship('Vehicle', backref='owner', lazy='dynamic')
 
     def __repr__(self):
@@ -56,18 +55,22 @@ class Vehicle(db.Model):
     model = db.Column(db.String, nullable=False)
     year = db.Column(db.Integer)
     is_favourite = db.Column(db.Boolean, default=False)
+    odo_unit = db.Column(db.String, default='km') # alternatively mi
 
     fillups = db.relationship('Fillup', backref='vehicle', lazy='dynamic')
 
     @property
     def current_odometer(self):
-        return self.fillups.order_by(Fillup.timestamp.desc()).first().odometer_km
+        conversion = 1/KM_PER_MILE if self.odo_unit == 'mi' else 1
+        return self.fillups.order_by(Fillup.timestamp.desc()).first().odometer_km * conversion
 
 
     def get_stats_df(self):
         df = pd.read_sql(self.fillups.statement, self.fillups.session.bind)
-        df['dist'] = df.odometer_km.diff()
-        df['lp100k'] = df.fuel_amt_l/df.dist * 100
+        df['odometer_mi'] = (df.odometer_km/KM_PER_MILE).astype(int)
+        df['dist_km'] = df.odometer_km.diff()
+        df['dist_mi'] = df.dist_km/KM_PER_MILE
+        df['lp100k'] = df.fuel_amt_l/df.dist_km * 100
         df['mpg'] = MPG_LP100K / df.lp100k 
         df['mpg_imp'] = MPG_IMP_PER_MPG * df.mpg
 
@@ -100,11 +103,19 @@ class Fillup(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     odometer_km = db.Column(db.Integer, nullable=False)
     fuel_amt_l = db.Column(db.Float, nullable=False)
+
+    @property
+    def odometer_mi(self):
+        return int(self.odometer_km/KM_PER_MILE)
     
     @property
     def dist(self):
         last_fillup = Fillup.query.filter_by(vehicle_id=self.vehicle_id).filter(Fillup.timestamp < self.timestamp).order_by(Fillup.timestamp.desc()).first()
         return self.odometer_km - last_fillup.odometer_km if last_fillup else None
+
+    @property
+    def dist_mi(self):
+        return self.dist/KM_PER_MILE if self.dist else None
 
     @property
     def lp100k(self):
