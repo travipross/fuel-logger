@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, SubmitField, PasswordField, BooleanField, FloatField, FileField, SelectField
+from wtforms import StringField, SubmitField, PasswordField, BooleanField, FileField, SelectField
 from wtforms.validators import DataRequired, EqualTo, Email, ValidationError
-from wtforms.fields.html5 import DateField, TimeField
+from wtforms.fields.html5 import DateField, TimeField, IntegerField, DecimalField
 from app.models import User, Vehicle, Fillup
 from flask import g
 from sqlalchemy import func
@@ -45,7 +45,7 @@ class VehicleForm(FlaskForm):
 class FillupForm(FlaskForm):
     date = DateField('Fillup Date', default=datetime.now)
     time = TimeField("Fillup Time", default=datetime.now)
-    fuel = FloatField('Fuel Amount (L)', validators=[DataRequired()])
+    fuel = DecimalField('Fuel Amount (L)', validators=[DataRequired()])
     odometer = IntegerField('Odometer Reading (in your vehicle\'s unit)', validators=[DataRequired()])
     submit = SubmitField('Submit Log')
 
