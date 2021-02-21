@@ -24,8 +24,8 @@
     <div class='row'>
         <h1>{{ vehicle.owner.username }}'s {% if vehicle.year %}{{ vehicle.year }}{% endif %} {{ vehicle.make }} {{ vehicle.model }}{% if vehicle.odo_unit == 'mi' %} <span class='h3'>(Odometer unit: Miles){% endif %}</span></h1>
         <a href=javascript:$(vehicleModal{{vehicle.id}}).modal()>Delete All</a><br>
-        <a href={{url_for('bulk_upload', vehicle_id=vehicle.id)}}>Import from CSV</a><br>
-        <a href={{url_for('bulk_download', vehicle_id=vehicle.id)}}>Export to CSV</a>
+        <a href={{url_for('fuel_logs.bulk_upload', vehicle_id=vehicle.id)}}>Import from CSV</a><br>
+        <a href={{url_for('fuel_logs.bulk_download', vehicle_id=vehicle.id)}}>Export to CSV</a>
         <hr>
     </div>
     <div class='row'>

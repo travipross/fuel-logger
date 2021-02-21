@@ -5,6 +5,7 @@ setup(
     use_scm_version=True,
     author="travipross",
     packages=find_packages(),
+    include_package_data=True,
     setup_requires=["setuptools_scm"],
     install_requires=[
         'python-dotenv',
@@ -19,5 +20,10 @@ setup(
         'flask-wtf',
         'pandas',
         'pyjwt'
-    ]
+    ],
+    entry_points={
+        "console_scripts": [ 
+            'fuel-logger = fuel_logger.fuel_logger:wsgi'
+        ]
+    }
 )
