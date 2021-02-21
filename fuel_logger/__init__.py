@@ -20,7 +20,7 @@ flask_app.config.from_object(Config)
 db = SQLAlchemy()
 migrate = Migrate()
 login = LoginManager()
-login.login_view = 'main.login'
+login.login_view = 'auth.login'
 moment = Moment()
 bootstrap = Bootstrap()
 mail = Mail()
@@ -44,6 +44,9 @@ def create_app(config_class=Config):
     from fuel_logger.main import bp as main_bp
     app.register_blueprint(main_bp)
 
+    from fuel_logger.auth import bp as auth_bp
+    app.register_blueprint(auth_bp, url_prefix="/auth")
+
     return app
 
-from fuel_logger import models
+from fuel_logger import auth, models

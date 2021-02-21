@@ -4,6 +4,6 @@
 {% block app_content %}
     <h1>Sign In</h1>
     {{ wtf.quick_form(form) }}
-    <p>Forgot your password? <a href="{{ url_for('main.reset_password_request') }}">Click to reset it</a></p>
-    <p>New User? <a href="{{ url_for('main.register') }}">Click to Register!</a></p>
+    <p>Forgot your password? <a href="{{ url_for('auth.reset_password_request') }}">Click to reset it</a></p>
+    <p>New User? <a href="{{ url_for('auth.register') }}">Click to Register!</a></p>
 {% endblock %}
