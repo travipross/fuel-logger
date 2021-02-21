@@ -7,7 +7,7 @@ from fuel_logger.auth.forms import (
     ResetPasswordForm,
 )
 from fuel_logger.models import User
-from fuel_logger.email import send_password_reset_email
+from fuel_logger.utils.email import send_password_reset_email
 
 from flask import redirect, url_for, flash, request, render_template
 from flask_login import login_required, current_user, login_user, logout_user
