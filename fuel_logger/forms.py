@@ -1,13 +1,14 @@
+from fuel_logger.models import User, Fillup
+from fuel_logger import db
+from fuel_logger import KM_PER_MILE
+
+from datetime import datetime
+from flask import g
 from flask_wtf import FlaskForm
+from sqlalchemy import func
 from wtforms import StringField, SubmitField, PasswordField, BooleanField, FileField, SelectField
 from wtforms.validators import DataRequired, EqualTo, Email, ValidationError
 from wtforms.fields.html5 import DateField, TimeField, IntegerField, DecimalField
-from app.models import User, Vehicle, Fillup
-from flask import g
-from sqlalchemy import func
-from app import db, app
-from datetime import datetime
-from app import KM_PER_MILE
 
 
 class LoginForm(FlaskForm):

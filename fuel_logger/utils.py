@@ -1,4 +1,4 @@
-from app import MPG_IMP_PER_MPG, MPG_LP100K, KM_PER_MILE
+from fuel_logger import KM_PER_MILE
 
 def compute_stats_from_fillup_df(df):
     if len(df) > 0:

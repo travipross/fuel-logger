@@ -1,49 +1,52 @@
-from app import app, db, KM_PER_MILE
+from fuel_logger import flask_app, db, KM_PER_MILE
+from fuel_logger.main import bp
+
+from fuel_logger.models import Fillup, Vehicle, User
+from fuel_logger.forms import VehicleForm, RegistrationForm, LoginForm, FillupForm, ImportForm, ResetPasswordRequestForm, ResetPasswordForm
+from fuel_logger.email import send_password_reset_email
+
 from flask import render_template, redirect, url_for, flash, request, g, Response
-from app.models import Fillup, Vehicle, User
-from app.forms import VehicleForm, RegistrationForm, LoginForm, FillupForm, ImportForm, ResetPasswordRequestForm, ResetPasswordForm
-from app.email import send_password_reset_email
 from flask_login import login_required, current_user, login_user, logout_user
 from werkzeug.urls import url_parse
-from werkzeug.exceptions import HTTPException
+
 import pandas as pd
 
-@app.route("/")
-@app.route("/index")
+@bp.route("/")
+@bp.route("/index")
 @login_required
 def index():
     return render_template('home.html')
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
             flash('Invalid username or password')
-            return redirect(url_for('login'))
+            return redirect(url_for('main.login'))
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('index')
+            next_page = url_for('main.index')
         return redirect(next_page)
     return render_template('login.html', title='Sign In', form=form)
 
 
-@app.route('/logout')
+@bp.route('/logout')
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('main.index'))
 
 
-@app.route('/register', methods=['GET', 'POST'])
+@bp.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     form = RegistrationForm()
     if form.validate_on_submit():
         user = User(username=form.username.data, email=form.email.data)
@@ -51,11 +54,11 @@ def register():
         db.session.add(user)
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
     return render_template('register.html', title='Register', form=form)
 
 
-@app.route("/logs/<vehicle_id>", methods=['GET', 'POST'])
+@bp.route("/logs/<vehicle_id>", methods=['GET', 'POST'])
 @login_required
 def logs(vehicle_id):
     v = Vehicle.query.get_or_404(vehicle_id)
@@ -70,16 +73,16 @@ def logs(vehicle_id):
         db.session.add(f)
         db.session.commit()
         flash('Your fuel log has been updated!')
-        return redirect(url_for('logs', vehicle_id=vehicle_id))
+        return redirect(url_for('main.logs', vehicle_id=vehicle_id))
     
     page = request.args.get('page', 1, type=int)
-    fillups = v.fillups.order_by(Fillup.timestamp.desc()).paginate(page, app.config['LOGS_PER_PAGE'], False)
-    next_url = url_for('logs', vehicle_id=v.id, page=fillups.next_num) if fillups.has_next else None
-    prev_url = url_for('logs', vehicle_id=v.id, page=fillups.prev_num) if fillups.has_prev else None
+    fillups = v.fillups.order_by(Fillup.timestamp.desc()).paginate(page, flask_app.config['LOGS_PER_PAGE'], False)
+    next_url = url_for('main.logs', vehicle_id=v.id, page=fillups.next_num) if fillups.has_next else None
+    prev_url = url_for('main.logs', vehicle_id=v.id, page=fillups.prev_num) if fillups.has_prev else None
 
     return render_template('vehicle_logs.html', vehicle=v, form=form, fillups=fillups.items, next_url=next_url, prev_url=prev_url, page=page, pages=fillups.pages or 1)
 
-@app.route("/logs/<vehicle_id>/bulk_upload", methods=['GET', 'POST'])
+@bp.route("/logs/<vehicle_id>/bulk_upload", methods=['GET', 'POST'])
 def bulk_upload(vehicle_id):
     vehicle = Vehicle.query.get_or_404(vehicle_id)
     form = ImportForm()
@@ -109,7 +112,7 @@ def bulk_upload(vehicle_id):
     return render_template('upload.html', form=form)
 
 
-@app.route('/logs/<vehicle_id>/bulk_download')
+@bp.route('/logs/<vehicle_id>/bulk_download')
 def bulk_download(vehicle_id):
     v = Vehicle.query.get_or_404(vehicle_id)
     df = v.get_stats_df()
@@ -120,7 +123,7 @@ def bulk_download(vehicle_id):
         headers={"Content-disposition": "attachment; filename=fuel_logs_{}.csv".format(v.model)}
     )
 
-@app.route("/logs/<vehicle_id>/bulk_delete", methods=['DELETE'])
+@bp.route("/logs/<vehicle_id>/bulk_delete", methods=['DELETE'])
 def bulk_delete(vehicle_id):
     vehicle = Vehicle.query.get_or_404(vehicle_id)
     for f in vehicle.fillups:
@@ -135,7 +138,7 @@ def bulk_delete(vehicle_id):
     return "", 200
 
 
-@app.route("/logs/delete/<log_id>", methods=['DELETE'])
+@bp.route("/logs/delete/<log_id>", methods=['DELETE'])
 def delete_log(log_id):
     l = Fillup.query.get_or_404(log_id)
     try:
@@ -148,7 +151,7 @@ def delete_log(log_id):
     flash("Your fuel log has been deleted")
     return "", 200
 
-@app.route("/add_vehicle", methods=["GET", "POST"])
+@bp.route("/add_vehicle", methods=["GET", "POST"])
 @login_required
 def add_vehicle():
     form = VehicleForm()
@@ -157,11 +160,11 @@ def add_vehicle():
         current_user.vehicles.append(v)
         db.session.commit()
         flash('Your vehicle has been added')
-        return redirect(url_for('garage', user_id=current_user.id))
+        return redirect(url_for('main.garage', user_id=current_user.id))
     return render_template('add_vehicle.html', form=form)
 
 
-@app.route('/garage/<user_id>')
+@bp.route('/garage/<user_id>')
 @login_required
 def garage(user_id):
     u = User.query.get(user_id)
@@ -170,37 +173,37 @@ def garage(user_id):
     return render_template('garage.html', user=u)
 
 
-@app.route('/reset_password_request', methods=['GET', 'POST'])
+@bp.route('/reset_password_request', methods=['GET', 'POST'])
 def reset_password_request():
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     form = ResetPasswordRequestForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user:
             send_password_reset_email(user)
         flash('Check your email for instructions to reset your password')
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
     return render_template('reset_password_request.html', form=form)
 
 
-@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+@bp.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     user = User.verify_reset_password_token(token)
     if not user:
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     form = ResetPasswordForm()
     if form.validate_on_submit():
         user.set_password(form.password.data)
         db.session.commit()
         flash('Your password has been reset.')
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
     return render_template('reset_password.html', form=form)
 
 
-@app.route('/set_fav_vehicle/<user_id>/<vehicle_id>')
+@bp.route('/set_fav_vehicle/<user_id>/<vehicle_id>')
 def set_fav_vehicle(user_id, vehicle_id):
     user = User.query.get(user_id)
     vehicle = user.vehicles.filter_by(id=vehicle_id).first()
@@ -208,4 +211,4 @@ def set_fav_vehicle(user_id, vehicle_id):
         flash("invalid user/vehicle")
     user.set_favourite_vehicle(vehicle)
     db.session.commit()
-    return redirect(url_for('garage', user_id=user_id))
+    return redirect(url_for('main.garage', user_id=user_id))
