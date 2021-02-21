@@ -15,6 +15,8 @@ from flask import (
 )
 from flask_login import login_required, current_user
 
+import pandas as pd
+
 
 @bp.route("/logs/<vehicle_id>", methods=["GET", "POST"])
 @login_required
