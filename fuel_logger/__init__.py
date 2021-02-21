@@ -50,7 +50,15 @@ def create_app(config_class=Config):
 
     app.register_blueprint(auth_bp, url_prefix="/auth")
 
+    from fuel_logger.fuel_logs import bp as logs_bp
+
+    app.register_blueprint(logs_bp)
+
+    from fuel_logger.vehicles import bp as vehicle_bp
+
+    app.register_blueprint(vehicle_bp)
+
     return app
 
 
-from fuel_logger import auth, models
+# from fuel_logger import auth, models, vehicles

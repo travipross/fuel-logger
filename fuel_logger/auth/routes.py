@@ -1,6 +1,6 @@
 from fuel_logger import db
 from fuel_logger.auth import bp
-from fuel_logger.forms import (
+from fuel_logger.auth.forms import (
     LoginForm,
     RegistrationForm,
     ResetPasswordRequestForm,

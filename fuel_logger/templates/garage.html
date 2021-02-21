@@ -9,7 +9,7 @@
     {% if vehicles %}
     <ul>
         {% for vehicle in vehicles %}
-            <li><a href="{{ url_for('main.logs', vehicle_id=vehicle.id) }}">{{ vehicle.year }} {{ vehicle.make }} {{ vehicle.model }}</a> | {% if vehicle.is_favourite %}Primary Vehicle{% else %}<a href="{{ url_for('main.set_fav_vehicle', user_id=current_user.id, vehicle_id=vehicle.id) }}">Set Primary</a>{% endif %}</li>
+            <li><a href="{{ url_for('fuel_logs.logs', vehicle_id=vehicle.id) }}">{{ vehicle.year }} {{ vehicle.make }} {{ vehicle.model }}</a> | {% if vehicle.is_favourite %}Primary Vehicle{% else %}<a href="{{ url_for('vehicles.set_fav_vehicle', user_id=current_user.id, vehicle_id=vehicle.id) }}">Set Primary</a>{% endif %}</li>
         {% endfor %}
     </ul>
     
@@ -17,5 +17,5 @@
         None
     {% endif %}
     {% endwith %}
-    <a href="{{ url_for('main.add_vehicle') }}">Add vehicle</a>
+    <a href="{{ url_for('vehicles.add_vehicle') }}">Add vehicle</a>
 {% endblock %}
