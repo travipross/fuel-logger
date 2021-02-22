@@ -1,5 +1,5 @@
 from fuel_logger.api import bp
-from fuel_logger.api.auth import token_auth, basic_auth, multi_auth
+from fuel_logger.api.auth import multi_auth
 from fuel_logger.models import User
 
 
