@@ -15,10 +15,12 @@ setup(
         'flask-httpauth',
         'flask-login',
         'flask-mail',
+        'flask-marshmallow',
         'flask-migrate',
         'flask-moment',
         'flask-sqlalchemy',
         'flask-wtf',
+        'marshmallow-sqlalchemy', 
         'pandas',
         'pyjwt'
     ],
