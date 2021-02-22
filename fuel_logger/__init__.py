@@ -7,6 +7,7 @@ from flask_login import LoginManager
 from flask_moment import Moment
 from flask_bootstrap import Bootstrap
 from flask_mail import Mail
+from flask_marshmallow import Marshmallow
 
 LITRE_PER_GAL = 3.785
 LITRE_PER_GAL_IMP = 4.546
@@ -18,6 +19,7 @@ flask_app = Flask(__name__)
 flask_app.config.from_object(Config)
 
 db = SQLAlchemy()
+ma = Marshmallow()
 migrate = Migrate()
 login = LoginManager()
 login.login_view = "auth.login"
@@ -32,6 +34,8 @@ def create_app(config_class=Config):
 
     db.init_app(app)
     migrate.init_app(app, db)
+    ma.init_app(app)
+
     login.init_app(app)
 
     moment.init_app(app)
@@ -58,7 +62,8 @@ def create_app(config_class=Config):
 
     app.register_blueprint(vehicle_bp)
 
+    from fuel_logger.api import bp as api_bp
+
+    app.register_blueprint(api_bp, url_prefix="/api")
+
     return app
-
-
-# from fuel_logger import auth, models, vehicles

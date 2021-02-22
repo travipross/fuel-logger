@@ -3,10 +3,12 @@ from fuel_logger import db, login
 from flask import current_app
 from flask_login import UserMixin
 from time import time
+from datetime import date, datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 
-
 import jwt
+import base64
+import os
 
 
 class User(UserMixin, db.Model):
@@ -15,6 +17,8 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String)
     password_hash = db.Column(db.String(128))
     vehicles = db.relationship("Vehicle", backref="owner", lazy="dynamic")
+    api_token = db.Column(db.String(32), index=True, unique=True)
+    api_token_expiration = db.Column(db.DateTime)
 
     def __repr__(self):
         return "<User {}>".format(self.username)
@@ -48,6 +52,34 @@ class User(UserMixin, db.Model):
         db.session.flush()
         vehicle.is_favourite = True
         db.session.commit()
+
+    def get_api_token(self, expires_in=3600):
+        now = datetime.utcnow()
+        if self.api_token and self.api_token_expiration > now + timedelta(seconds=60):
+            return self.api_token
+        self.api_token = base64.b64encode(os.urandom(24)).decode("utf-8")
+        self.api_token_expiration = now + timedelta(seconds=expires_in)
+        db.session.add(self)
+
+        return self.api_token
+
+    def revoke_token(self):
+        self.api_token_expiration = datetime.utcnow() - timedelta(seconds=1)
+
+    @staticmethod
+    def check_token(token):
+        user = User.query.filter_by(api_token=token).first()
+        if user is None or user.api_token_expiration < datetime.utcnow():
+            return None
+        return user
+
+    def to_dict(self, include_email=False):
+        data = {"id": self.id, "username": self.username}
+
+        if include_email:
+            data["email"] = self.email
+
+        return data
 
 
 @login.user_loader

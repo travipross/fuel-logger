@@ -12,6 +12,7 @@ def make_shell_context():
         "Vehicle": Vehicle,
         "Fillup": Fillup,
         "v": Vehicle.query.first(),
+        "u": User.query.first(),
     }
 
 

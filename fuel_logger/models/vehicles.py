@@ -63,6 +63,13 @@ class Vehicle(db.Model):
     def __repr__(self):
         return "<Vehicle {} {}>".format(self.make, self.model)
 
+    def to_dict(self):
+        return {
+            'make': self.make, 
+            'model': self.model,
+            'year': self.year,
+            'id': self.id,
+        }
 
 idx_unq_fav_vehicle = db.Index(
     "idx_unq_fav_vehicle",
