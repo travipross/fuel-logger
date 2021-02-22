@@ -1,4 +1,3 @@
-import marshmallow
 from fuel_logger.config import Config
 
 from flask import Flask
