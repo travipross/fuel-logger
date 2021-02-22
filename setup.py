@@ -12,6 +12,7 @@ setup(
         'email-validator',
         'flask',
         'flask-bootstrap',
+        'flask-httpauth',
         'flask-login',
         'flask-mail',
         'flask-migrate',

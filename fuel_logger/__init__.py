@@ -58,7 +58,8 @@ def create_app(config_class=Config):
 
     app.register_blueprint(vehicle_bp)
 
+    from fuel_logger.api import bp as api_bp
+
+    app.register_blueprint(api_bp, url_prefix='/api')
+
     return app
-
-
-# from fuel_logger import auth, models, vehicles
