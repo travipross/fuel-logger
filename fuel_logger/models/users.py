@@ -57,7 +57,7 @@ class User(UserMixin, db.Model):
         now = datetime.utcnow()
         if self.api_token and self.api_token_expiration > now + timedelta(seconds=60):
             return self.api_token
-        self.api_token = base64.b64encode(os.urandom(24)).decode('utf-8')
+        self.api_token = base64.b64encode(os.urandom(24)).decode("utf-8")
         self.api_token_expiration = now + timedelta(seconds=expires_in)
         db.session.add(self)
 
@@ -70,19 +70,17 @@ class User(UserMixin, db.Model):
     def check_token(token):
         user = User.query.filter_by(api_token=token).first()
         if user is None or user.api_token_expiration < datetime.utcnow():
-            return None 
-        return user 
+            return None
+        return user
 
     def to_dict(self, include_email=False):
-        data = {
-            'id': self.id,
-            'username': self.username
-        }
+        data = {"id": self.id, "username": self.username}
 
         if include_email:
-            data['email'] = self.email
+            data["email"] = self.email
 
         return data
+
 
 @login.user_loader
 def load_user(id):
