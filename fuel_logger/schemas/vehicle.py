@@ -13,10 +13,13 @@ class VehicleSchema(ma.SQLAlchemySchema):
     year = ma.auto_field()
     odo_unit = ma.auto_field()
     current_odometer = fields.Method("get_odometer")
+    stats = fields.Method("get_stats")
 
     def get_odometer(self, obj):
         return obj.current_odometer
 
+    def get_stats(self, obj):
+        return obj.compute_stats()
 
 vehicle_schema = VehicleSchema()
 vehicles_schema = VehicleSchema(many=True)
