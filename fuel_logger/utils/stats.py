@@ -7,7 +7,7 @@ def compute_stats_from_fillup_df(df):
 
         days_diff = (last_10.timestamp.max() - last_10.timestamp.min()).days
         odo_diff = last_10.odometer_km.max() - last_10.odometer_km.min()
-        fuel_diff = last_10.fuel_amt_l.max() - last_10.fuel_amt_l.min()
+        fuel_diff = last_10.fuel_amt_l.sum()
 
         avg_lp100k = last_10.lp100k.mean()
         avg_mpg = last_10.mpg.mean()
@@ -27,9 +27,12 @@ def compute_stats_from_fillup_df(df):
 
         total_logs = len(df)
 
+        fuel_per_month = (fuel_diff / days_diff * 30) if days_diff > 0 else None
+        dist_per_month = (odo_diff / days_diff * 30) if days_diff > 0 else None
+
         stats = {
-            "fuel_per_month": float(fuel_diff / days_diff * 30) if days_diff > 0 else None,
-            "dist_per_month": float(odo_diff / days_diff * 30) if days_diff > 0 else None,
+            "fuel_per_month": float(fuel_per_month),
+            "dist_per_month": float(dist_per_month),
             "avg_lp100k": float(avg_lp100k),
             "avg_mpg": float(avg_mpg),
             "avg_mpg_imp": float(avg_mpg_imp),
