@@ -2,12 +2,13 @@ from fuel_logger import KM_PER_MILE
 
 
 def compute_stats_from_fillup_df(df):
-    if len(df) > 0:
+    total_logs = len(df)
+    if total_logs > 0:
         last_10 = df.sort_values("timestamp").tail(10)
-
+            
         days_diff = (last_10.timestamp.max() - last_10.timestamp.min()).days
-        odo_diff = last_10.odometer_km.max() - last_10.odometer_km.min()
-        fuel_diff = last_10.fuel_amt_l.sum()
+        odo_diff = last_10.iloc[-1].odometer_km - last_10.iloc[1].odometer_km
+        fuel_diff = last_10[1:].fuel_amt_l.sum()
 
         avg_lp100k = last_10.lp100k.mean()
         avg_mpg = last_10.mpg.mean()
@@ -24,8 +25,6 @@ def compute_stats_from_fillup_df(df):
         total_fuel = df.fuel_amt_l.sum()
         total_dist_km = df.dist_km.sum()
         current_odo = df.odometer_km.max()
-
-        total_logs = len(df)
 
         fuel_per_month = (fuel_diff / days_diff * 30) if days_diff > 0 else None
         dist_per_month = (odo_diff / days_diff * 30) if days_diff > 0 else None
