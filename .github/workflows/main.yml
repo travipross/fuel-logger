@@ -55,7 +55,7 @@ jobs:
   semantic-release:
     runs-on: ubuntu-latest
     environment: personal
-    if: github.base_ref == 'master' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/github-actions' # run on commits and PRs to master branch
+    if: github.base_ref == 'master' || github.ref == 'refs/heads/master' # run on commits and PRs to master branch
     needs: 
       - lint
 #       - test
@@ -82,16 +82,11 @@ jobs:
         run: |
           if [ -f requirements.ci.txt ]; then pip install -r requirements.ci.txt; fi
       - name: Semantic Release 
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/github-actions'  # if this is the master branch, assume triggered by push
+        if: github.ref == 'refs/heads/master' # if this is the master branch, assume triggered by push
         id: semantic-release
         uses: cycjimmy/semantic-release-action@v2 
         with:
           semantic_version: 16
-          branches: |
-            [
-              'master',
-              'github-actions'
-            ]
           extra_plugins: |
             @semantic-release/exec
       - name: Semantic non-Release
