@@ -1,7 +1,8 @@
-from fuel_logger import ma 
+from fuel_logger import ma
 from fuel_logger.models import Fillup, Vehicle
 
 from marshmallow import fields
+
 
 class FillupSchema(ma.SQLAlchemyAutoSchema):
     class Meta:

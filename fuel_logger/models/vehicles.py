@@ -65,11 +65,12 @@ class Vehicle(db.Model):
 
     def to_dict(self):
         return {
-            'make': self.make, 
-            'model': self.model,
-            'year': self.year,
-            'id': self.id,
+            "make": self.make,
+            "model": self.model,
+            "year": self.year,
+            "id": self.id,
         }
+
 
 idx_unq_fav_vehicle = db.Index(
     "idx_unq_fav_vehicle",
