@@ -92,4 +92,4 @@ jobs:
       - name: Semantic non-Release
         if: github.ref != 'refs/heads/master' # if this isn't the master branch, assume triggered by PR
         run: |
-          make python build-docker push-docker
+          make python build-docker publish-docker
