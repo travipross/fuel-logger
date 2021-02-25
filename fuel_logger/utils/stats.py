@@ -5,7 +5,7 @@ def compute_stats_from_fillup_df(df):
     total_logs = len(df)
     if total_logs > 0:
         last_10 = df.sort_values("timestamp").tail(10)
-            
+
         days_diff = (last_10.timestamp.max() - last_10.timestamp.min()).days
         odo_diff = last_10.iloc[-1].odometer_km - last_10.iloc[1].odometer_km
         fuel_diff = last_10[1:].fuel_amt_l.sum()

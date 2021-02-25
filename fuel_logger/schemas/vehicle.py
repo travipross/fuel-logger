@@ -3,10 +3,11 @@ from fuel_logger.models import Vehicle
 
 from marshmallow import fields
 
+
 class VehicleSchema(ma.SQLAlchemySchema):
     class Meta:
         model = Vehicle
-    
+
     id = ma.auto_field()
     make = ma.auto_field()
     model = ma.auto_field()
@@ -20,6 +21,7 @@ class VehicleSchema(ma.SQLAlchemySchema):
 
     def get_stats(self, obj):
         return obj.compute_stats()
+
 
 vehicle_schema = VehicleSchema()
 vehicles_schema = VehicleSchema(many=True)

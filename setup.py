@@ -8,25 +8,21 @@ setup(
     include_package_data=True,
     setup_requires=["setuptools_scm"],
     install_requires=[
-        'python-dotenv',
-        'email-validator',
-        'flask',
-        'flask-bootstrap',
-        'flask-httpauth',
-        'flask-login',
-        'flask-mail',
-        'flask-marshmallow',
-        'flask-migrate',
-        'flask-moment',
-        'flask-sqlalchemy',
-        'flask-wtf',
-        'marshmallow-sqlalchemy', 
-        'pandas',
-        'pyjwt'
+        "python-dotenv",
+        "email-validator",
+        "flask",
+        "flask-bootstrap",
+        "flask-httpauth",
+        "flask-login",
+        "flask-mail",
+        "flask-marshmallow",
+        "flask-migrate",
+        "flask-moment",
+        "flask-sqlalchemy",
+        "flask-wtf",
+        "marshmallow-sqlalchemy",
+        "pandas",
+        "pyjwt",
     ],
-    entry_points={
-        "console_scripts": [ 
-            'fuel-logger = fuel_logger.fuel_logger:wsgi'
-        ]
-    }
+    entry_points={"console_scripts": ["fuel-logger = fuel_logger.fuel_logger:wsgi"]},
 )

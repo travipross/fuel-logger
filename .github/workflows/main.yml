@@ -1,0 +1,96 @@
+name: Main Workflow
+
+on: 
+  - push
+  - pull_request
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps: 
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+    - uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.ci.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.ci.txt ]; then pip install -r requirements.ci.txt; fi
+    - name: Lint with black
+      run: |
+        black --check .
+
+#   test:
+#     runs-on: ubuntu-latest
+#     if: github.base_ref == 'master' || github.ref == 'refs/heads/master' # run on commits and PRs to master branch
+#     steps:
+#     - uses: actions/checkout@v2
+#     - name: Set up Python 3.9
+#       uses: actions/setup-python@v2
+#       with:
+#         python-version: 3.9
+#     - uses: actions/cache@v2
+#       with:
+#         path: ~/.cache/pip
+#         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt', '**/requirements.ci.txt') }}
+#         restore-keys: |
+#           ${{ runner.os }}-pip-
+#     - name: Install dependencies
+#       run: |
+#         python -m pip install --upgrade pip
+#         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+#         if [ -f requirements.ci.txt ]; then pip install -r requirements.ci.txt; fi
+#         pip install .
+#     - name: Test with pytest
+#       run: |
+#         pytest
+
+  semantic-release:
+    runs-on: ubuntu-latest
+    environment: personal
+    if: github.base_ref == 'master' || github.ref == 'refs/heads/master' # run on commits and PRs to master branch
+    needs: 
+      - lint
+#       - test
+    env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+          TWINE_REPOSITORY_URL: ${{ secrets.TWINE_REPOSITORY_URL }}
+          DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+    steps: 
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.ci.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Install dependencies
+        run: |
+          if [ -f requirements.ci.txt ]; then pip install -r requirements.ci.txt; fi
+      - name: Semantic Release 
+        if: github.ref == 'refs/heads/master' # if this is the master branch, assume triggered by push
+        id: semantic-release
+        uses: cycjimmy/semantic-release-action@v2 
+        with:
+          semantic_version: 16
+          extra_plugins: |
+            @semantic-release/exec
+      - name: Semantic non-Release
+        if: github.ref != 'refs/heads/master' # if this isn't the master branch, assume triggered by PR
+        run: |
+          echo github.ref = ${{ github.ref }}
+          make python build-docker publish-docker
