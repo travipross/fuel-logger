@@ -17,11 +17,11 @@ if [[ ! -z "$VERSION" ]]; then
 	pushed=true
 fi
 
-if [[ "$GITHUB_HEAD_REF" = "refs/heads/master" ]]; then
+if [[ "$GITHUB_REF" = "refs/heads/master" ]]; then
 	TAG=latest
 else
 	TAG=dev
-	echo "GITHUB_HEAD_REF=$GITHUB_HEAD_REF"
+	echo "GITHUB_REF=$GITHUB_REF"
 fi
 
 docker tag "${IMAGE}:local" "${IMAGE}:${TAG}"
