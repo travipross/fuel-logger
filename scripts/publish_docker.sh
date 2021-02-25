@@ -17,7 +17,7 @@ if [[ ! -z "$VERSION" ]]; then
 	pushed=true
 fi
 
-if [[ "$GITHUB_HEAD_REF" = "master" ]]; then
+if [[ "$GITHUB_HEAD_REF" = "refs/heads/master" ]]; then
 	TAG=latest
 else
 	TAG=dev
