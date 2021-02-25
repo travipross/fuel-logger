@@ -1,0 +1,18 @@
+{
+    "plugins": [
+        "@semantic-release/commit-analyzer", 
+        "@semantic-release/release-notes-generator",
+        [
+            "@semantic-release/exec", {
+                "publishCmd": "make python && make build-docker && make publish-docker"
+            }
+        ],
+        [
+            "@semantic-release/github", {
+                "assets": [
+                    {"path": "dist/**"}
+                ]
+            }
+        ]
+    ]
+}
