@@ -90,7 +90,7 @@ jobs:
       - name: Semantic Release 
         if: github.ref == 'refs/heads/master' # if this is the master branch, assume triggered by push
         id: semantic-release
-        uses: cycjimmy/semantic-release-action@v2 
+        uses: cycjimmy/semantic-release-action@v3
         with:
           semantic_version: 16
           extra_plugins: |
