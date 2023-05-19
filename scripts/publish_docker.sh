@@ -7,24 +7,25 @@ if [[ -z "$DOCKER_REGISTRY" ]]; then
 	exit 1
 fi
 
-IMAGE="${DOCKER_REGISTRY}/fuel-logger"
+CONTAINER_NAME="fuel-logger"
+IMAGE="${DOCKER_REGISTRY}/${CONTAINER_NAME}"
 
 
-if [[ ! -z "$VERSION" ]]; then
-	docker tag "${IMAGE}:local" "${IMAGE}:$VERSION"
+if [[ ! -z "${VERSION}" ]]; then
+	docker tag "dev.local/${CONTAINER_NAME}:latest" "${IMAGE}:${VERSION}"
 	docker push "${IMAGE}:${VERSION}"
 	echo "Pushed ${IMAGE}:${VERSION}."
 	pushed=true
 fi
 
-if [[ "$GITHUB_REF" = "refs/heads/master" ]]; then
+if [[ "${GITHUB_REF}" = "refs/heads/master" ]]; then
 	TAG=latest
 else
 	TAG=dev
-	echo "GITHUB_REF=$GITHUB_REF"
+	echo "GITHUB_REF=${GITHUB_REF}"
 fi
 
-docker tag "${IMAGE}:local" "${IMAGE}:${TAG}"
+docker tag "dev.local/${CONTAINER_NAME}:latest" "${IMAGE}:${TAG}"
 docker push "${IMAGE}:${TAG}"
 echo "Pushed ${IMAGE}:${TAG}."
 
