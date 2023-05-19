@@ -8,7 +8,7 @@
         <div class='table-responsive'>
             {{ v.get_stats_df().sort_values('timestamp', ascending=False).head(15).to_html(classes=['table', 'table-hover', 'table-striped'], index=False, columns=['timestamp', 'odometer_km', 'odometer_mi', 'dist_km', 'dist_mi', 'fuel_amt_l', 'lp100k', 'mpg', 'mpg', 'mpg_imp'], float_format='%0.1f', na_rep='---')|safe }}
         </div>
-        
+
     {% else %}
         No vehicle! <a href={{ url_for('vehicles.add_vehicle') }}>Add one now</a>
     {% endif %}

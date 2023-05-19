@@ -28,4 +28,3 @@ fi
 docker tag "dev.local/${CONTAINER_NAME}:latest" "${IMAGE}:${TAG}"
 docker push "${IMAGE}:${TAG}"
 echo "Pushed ${IMAGE}:${TAG}."
-

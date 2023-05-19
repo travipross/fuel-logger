@@ -6,11 +6,11 @@ WORKDIR /home/fuel_logger/
 
 # Copy requirements list and install
 COPY requirements.txt requirements.txt
-RUN pip install -r requirements.txt 
+RUN pip install -r requirements.txt
 
 # Copy applictation code and boot script
-COPY fuel_logger fuel_logger 
-COPY boot.sh boot.sh 
+COPY fuel_logger fuel_logger
+COPY boot.sh boot.sh
 
 # Own files and assume user
 RUN chown -R fuel_logger:fuel_logger ./
