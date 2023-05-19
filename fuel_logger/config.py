@@ -20,6 +20,7 @@ class Config:
     MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
     ADMINS = ["no-reply@fuel-logger.herokuapp.com"]
 
+
 class TestingConfig:
     SECRET_KEY = os.getenv("SECRET_KEY", "whiskey")
     SQLALCHEMY_DATABASE_URI = os.getenv(
