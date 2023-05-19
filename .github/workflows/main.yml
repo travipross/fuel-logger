@@ -31,12 +31,12 @@ jobs:
     runs-on: ubuntu-latest
     if: github.base_ref == 'master' || github.ref == 'refs/heads/master' # run on commits and PRs to master branch
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python 3.9
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.9
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt', '**/requirements.ci.txt') }}
@@ -78,7 +78,7 @@ jobs:
           registry: ${{ secrets.DOCKER_REGISTRY }}
           username: ${{ secrets.TWINE_USERNAME }}
           password: ${{ secrets.TWINE_PASSWORD }}
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.ci.txt') }}
