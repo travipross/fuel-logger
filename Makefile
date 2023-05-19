@@ -1,7 +1,9 @@
-.PHONY: clean publish-python build-docker publish-docker 
+.PHONY: clean python build-docker publish-docker python
+
+default:
 
 python:
-	scripts/build_and_publish_python.sh 
+	scripts/build_and_publish_python.sh
 
 build-docker:
 	scripts/build_docker.sh

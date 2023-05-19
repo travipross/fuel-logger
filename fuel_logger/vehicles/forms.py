@@ -5,7 +5,7 @@ from wtforms import (
     SelectField,
 )
 from wtforms.validators import DataRequired
-from wtforms.fields.html5 import IntegerField
+from wtforms.fields import IntegerField
 
 
 class VehicleForm(FlaskForm):

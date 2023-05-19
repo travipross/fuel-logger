@@ -1,7 +1,7 @@
 """initialize
 
 Revision ID: 31dcc7cf4d42
-Revises: 
+Revises:
 Create Date: 2020-03-29 17:14:41.313496
 
 """
