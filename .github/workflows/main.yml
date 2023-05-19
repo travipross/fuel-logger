@@ -92,7 +92,6 @@ jobs:
         id: semantic-release
         uses: cycjimmy/semantic-release-action@v3
         with:
-          semantic_version: 16
           extra_plugins: |
             @semantic-release/exec
       - name: Semantic non-Release
