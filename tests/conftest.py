@@ -12,7 +12,6 @@ def corolla_df():
 
 @pytest.fixture
 def app_fixture():
-     
     os.environ['CONFIG_TYPE'] = 'config.TestingConfig'
     return create_app()
 
