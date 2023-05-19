@@ -24,9 +24,9 @@ class Vehicle(db.Model):
     @property
     def current_odometer(self):
         conversion = 1 / KM_PER_MILE if self.odo_unit == "mi" else 1
+        most_recent_fillup = self.fillups.order_by(Fillup.timestamp.desc()).first()
         return (
-            self.fillups.order_by(Fillup.timestamp.desc()).first().odometer_km
-            * conversion
+            most_recent_fillup.odometer_km * conversion if most_recent_fillup else None
         )
 
     def get_stats_df(self):
