@@ -1,6 +1,7 @@
 from fuel_logger.utils.stats import compute_stats_from_fillup_df
 from pytest import approx
 
+
 def test_compute_stats_from_fillup_df(corolla_df):
     assert len(corolla_df) == 12
     assert {
