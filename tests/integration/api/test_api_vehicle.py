@@ -6,6 +6,7 @@ import uuid
 
 @pytest.fixture
 def vehicle_id_to_delete(app_fixture):
+    # Create vehicle object
     with app_fixture.app_context():
         random_model = f"TestModel-{uuid.uuid4()}"
         vehicle = Vehicle(
@@ -17,6 +18,7 @@ def vehicle_id_to_delete(app_fixture):
         db.session.commit()
         yield vehicle.id
 
+    # delete at teardown if object still exists
     with app_fixture.app_context():
         if Vehicle.query.get(vehicle.id) is not None:
             db.session.delete(vehicle)
@@ -24,17 +26,20 @@ def vehicle_id_to_delete(app_fixture):
 
 
 def test_vehicle_list(test_client, basic_auth_header):
+    # Confirm that a non-empty list of vehicles is returned by the API
     resp = test_client.get("/api/vehicles", headers=basic_auth_header)
     assert resp.status_code == 200
     assert len(resp.json) >= 1
 
 
 def test_vehicle_get(test_client, basic_auth_header, test_vehicle_id, app_fixture):
+    # request specific vehicle by id
     resp = test_client.get(
         f"/api/vehicles/{test_vehicle_id}", headers=basic_auth_header
     )
     assert resp.status_code == 200
 
+    # Confirm vehicle details returned by the api match what is expected
     with app_fixture.app_context():
         test_vehicle = Vehicle.query.get(test_vehicle_id)
 
