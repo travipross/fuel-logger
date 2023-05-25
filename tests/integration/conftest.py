@@ -56,7 +56,7 @@ def test_vehicle_id(app_fixture):
 
 
 @pytest.fixture(autouse=True, scope="session")
-def test_user(test_vehicle_id, app_fixture, test_username, test_password):
+def test_user_id(test_vehicle_id, app_fixture, test_username, test_password):
     with app_fixture.app_context():
         test_vehicle = Vehicle.query.get(test_vehicle_id)
         user = User(
@@ -68,7 +68,7 @@ def test_user(test_vehicle_id, app_fixture, test_username, test_password):
         db.session.add(user)
         db.session.commit()
 
-    yield user
+        yield user.id
 
     with app_fixture.app_context():
         db.session.delete(user)
