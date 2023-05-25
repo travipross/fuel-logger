@@ -12,7 +12,6 @@ from flask import jsonify
 @bp.route("/logs")
 @multi_auth.login_required
 def fuel_logs():
-    print(request.args)
     if request.args.get("vehicle_id"):
         vehicle_ids = [int(request.args.get("vehicle_id"))]
     else:
