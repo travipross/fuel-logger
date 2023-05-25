@@ -41,6 +41,9 @@ class Vehicle(db.Model):
         return df
 
     def compute_stats(self):
+        if len(self.fillups.all()) < 2:
+            return None
+
         df = self.get_stats_df()
         stats = compute_stats_from_fillup_df(df)
 
