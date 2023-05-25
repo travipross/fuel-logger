@@ -3,7 +3,6 @@ import time
 
 
 def test_send_email(app_fixture, mocker):
-
     mock_mailer = mocker.MagicMock(name="fuel_logger.utils.email.mail")
     mocker.patch("fuel_logger.utils.email.mail", new=mock_mailer)
 
