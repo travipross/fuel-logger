@@ -42,4 +42,4 @@ def delete_vehicle(id):
     vehicle = Vehicle.query.get_or_404(id)
     db.session.delete(vehicle)
     db.session.commit()
-    return jsonify({"status": "DELTETED"})
+    return jsonify({"status": "DELETED"})
