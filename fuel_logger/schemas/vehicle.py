@@ -7,6 +7,7 @@ from marshmallow import fields
 class VehicleSchema(ma.SQLAlchemySchema):
     class Meta:
         model = Vehicle
+        load_instance = True
 
     id = ma.auto_field()
     make = ma.auto_field()

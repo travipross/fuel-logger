@@ -7,6 +7,7 @@ from marshmallow import fields
 class FillupSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Fillup
+        load_instance = True
 
     vehicle = fields.Method("get_vehicle_description")
     vehicle_id = fields.Method("get_vehicle_id")
