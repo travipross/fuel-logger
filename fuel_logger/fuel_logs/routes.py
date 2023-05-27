@@ -43,7 +43,7 @@ def logs(vehicle_id):
 
     page = request.args.get("page", 1, type=int)
     fillups = v.fillups.order_by(Fillup.timestamp.desc()).paginate(
-        page, current_app.config["LOGS_PER_PAGE"], False
+        page=page, per_page=current_app.config["LOGS_PER_PAGE"], error_out=False
     )
     next_url = (
         url_for("fuel_logs.logs", vehicle_id=v.id, page=fillups.next_num)
