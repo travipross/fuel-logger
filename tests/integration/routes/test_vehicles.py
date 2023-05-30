@@ -86,6 +86,50 @@ def test_set_fav_vehicle__exists(
             assert user.get_favourite_vehicle().id == secondary_vehicle_id
 
 
+def test_set_fav_vehicle__nonexistent(
+    app_fixture, test_user_id, test_vehicle_id, test_username
+):
+    with app_fixture.app_context():
+        test_user = User.query.get(test_user_id)
+        with app_fixture.test_client(user=test_user) as test_client_authenticated:
+            resp = test_client_authenticated.get(
+                f"/set_fav_vehicle/{test_user_id}/{test_vehicle_id}",
+                follow_redirects=True,
+            )
+
+        assert resp.status_code == 200
+
+        with app_fixture.app_context():
+            user = User.query.get(test_user_id)
+            assert user.get_favourite_vehicle().id == test_vehicle_id
+
+        bad_user_id = test_user_id + 69
+        assert User.query.get(bad_user_id) is None
+
+        with app_fixture.test_client(user=test_user) as test_client_authenticated:
+            resp = test_client_authenticated.get(
+                f"/set_fav_vehicle/{bad_user_id}/{test_vehicle_id}",
+                follow_redirects=True,
+            )
+
+        assert resp.status_code == 403
+        assert "Unauthorized" in resp.text
+        assert "invalid user" in resp.text
+
+        bad_vehicle_id = test_vehicle_id + 69
+        assert User.query.get(bad_vehicle_id) is None
+
+        with app_fixture.test_client(user=test_user) as test_client_authenticated:
+            resp = test_client_authenticated.get(
+                f"/set_fav_vehicle/{test_user_id}/{bad_vehicle_id}",
+                follow_redirects=True,
+            )
+
+        assert resp.status_code == 200
+        assert "invalid vehicle" in resp.text
+        assert f"{test_username}'s Garage" in resp.text
+
+
 def test_add_vehicle__unauthenticated(test_client):
     resp = test_client.get(f"/add_vehicle", follow_redirects=True)
     assert resp.status_code == 200
