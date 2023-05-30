@@ -18,7 +18,9 @@ def test_token_header(test_token):
     return {"Authorization": f"Bearer {test_token}"}
 
 
-def test_create_token(test_client, basic_auth_header, test_user_id, test_username):
+def test_create_token(
+    test_client, basic_auth_header, test_user_id, test_username, test_user_email
+):
     # Request a token using basic auth credentials
     resp = test_client.get("/api/tokens", headers=basic_auth_header)
     assert resp.status_code == 200
@@ -36,16 +38,18 @@ def test_create_token(test_client, basic_auth_header, test_user_id, test_usernam
     assert resp.status_code == 200
     assert resp.json.get("id") == test_user_id
     assert resp.json.get("username") == test_username
-    assert resp.json.get("email") == "test-email@fuel-logger-flaskapp.com"
+    assert resp.json.get("email") == test_user_email
 
 
-def test_revoke_token(test_client, test_token_header, test_user_id, test_username):
+def test_revoke_token(
+    test_client, test_token_header, test_user_id, test_username, test_user_email
+):
     # Check that token works
     resp = test_client.get(f"/api/users/{test_user_id}", headers=test_token_header)
     assert resp.status_code == 200
     assert resp.json.get("id") == test_user_id
     assert resp.json.get("username") == test_username
-    assert resp.json.get("email") == "test-email@fuel-logger-flaskapp.com"
+    assert resp.json.get("email") == test_user_email
 
     # revoke token
     resp = test_client.delete("/api/tokens", headers=test_token_header)

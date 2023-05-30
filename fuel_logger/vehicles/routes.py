@@ -39,6 +39,7 @@ def garage(user_id):
     return render_template("garage.html", user=u)
 
 
+# TODO: Make authenticated route and get user id from session
 @bp.route("/set_fav_vehicle/<user_id>/<vehicle_id>")
 def set_fav_vehicle(user_id, vehicle_id):
     user = User.query.get(user_id)

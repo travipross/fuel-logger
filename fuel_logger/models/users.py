@@ -3,7 +3,7 @@ from fuel_logger import db, login
 from flask import current_app
 from flask_login import UserMixin
 from time import time
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 
 import jwt
@@ -52,6 +52,13 @@ class User(UserMixin, db.Model):
         db.session.flush()
         vehicle.is_favourite = True
         db.session.commit()
+
+    def get_favourite_vehicle(self):
+        fav = self.vehicles.filter_by(is_favourite=True).one_or_none()
+        if fav is None:
+            fav = self.vehicles.first()
+            self.set_favourite_vehicle(fav)
+        return fav
 
     def get_api_token(self, expires_in=3600):
         now = datetime.utcnow()

@@ -11,6 +11,11 @@ def test_username():
 
 
 @pytest.fixture(scope="session")
+def test_user_email():
+    return "test-email@fuel-logger-flaskapp.com"
+
+
+@pytest.fixture(scope="session")
 def test_password():
     return "samplepassword"
 
@@ -30,11 +35,9 @@ def setup_database(app_fixture):
         flask_migrate.downgrade(directory="fuel_logger/migrations", revision="base")
 
 
-@pytest.fixture
+@pytest.fixture()
 def test_client(app_fixture):
-    with app_fixture.test_client() as client:
-        client
-        yield client
+    yield app_fixture.test_client()
 
 
 @pytest.fixture(autouse=True, scope="session")
@@ -56,12 +59,14 @@ def test_vehicle_id(app_fixture):
 
 
 @pytest.fixture(autouse=True, scope="session")
-def test_user_id(test_vehicle_id, app_fixture, test_username, test_password):
+def test_user_id(
+    test_vehicle_id, app_fixture, test_username, test_password, test_user_email
+):
     with app_fixture.app_context():
         test_vehicle = Vehicle.query.get(test_vehicle_id)
         user = User(
             username=test_username,
-            email="test-email@fuel-logger-flaskapp.com",
+            email=test_user_email,
             vehicles=[test_vehicle],
         )
         user.set_password(test_password)
