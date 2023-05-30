@@ -181,7 +181,7 @@ def secondary_vehicle_id_2(app_fixture, secondary_user_id):
         db.session.commit()
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(strict=True)
 def test_set_fav_vehicle__bug_set_for_other_user(
     app_fixture,
     test_user_id,
@@ -191,15 +191,16 @@ def test_set_fav_vehicle__bug_set_for_other_user(
 ):
     with app_fixture.app_context():
         test_user = User.query.get(test_user_id)
+        secondary_user = User.query.get(secondary_user_id)
 
-        assert secondary_user_id.get_favourite_vehicle().id == secondary_vehicle_id_1
+        assert secondary_user.get_favourite_vehicle().id == secondary_vehicle_id_1
         with app_fixture.test_client(user=test_user) as test_client_authenticated:
             resp = test_client_authenticated.get(
                 f"/set_fav_vehicle/{secondary_user_id}/{secondary_vehicle_id_2}",
                 follow_redirects=True,
             )
-        assert resp.status_code == 200
-        assert secondary_user_id.get_favourite_vehicle().id != secondary_vehicle_id_2
+        assert resp.status_code == 403
+        assert secondary_user.get_favourite_vehicle().id != secondary_vehicle_id_2
 
 
 def test_add_vehicle__unauthenticated(test_client):
