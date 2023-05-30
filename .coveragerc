@@ -1,3 +1,5 @@
 [run]
+include =
+    fuel_logger/*
 omit =
     fuel_logger/migrations/*
