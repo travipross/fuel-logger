@@ -35,3 +35,4 @@ class TestingConfig:
     MAIL_USERNAME = os.environ.get("MAIL_USERNAME")
     MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
     ADMINS = ["no-reply@fuel-logger.herokuapp.com"]
+    WTF_CSRF_ENABLED = os.environ.get("WTF_CSRF_ENABLED") is not None
