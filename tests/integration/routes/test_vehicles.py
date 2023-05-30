@@ -130,6 +130,78 @@ def test_set_fav_vehicle__nonexistent(
         assert f"{test_username}'s Garage" in resp.text
 
 
+@pytest.fixture(scope="function")
+def secondary_user_id(app_fixture):
+    with app_fixture.app_context():
+        new_user = User(
+            username="secondary_user",
+            email="doesntmatter@ignore.com",
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        new_user_id = new_user.id
+        yield new_user_id
+        db.session.delete(new_user)
+        db.session.commit()
+
+
+@pytest.fixture(scope="function")
+def secondary_vehicle_id_1(app_fixture, secondary_user_id):
+    with app_fixture.app_context():
+        new_user = User.query.get(secondary_user_id)
+        new_vehicle_1 = Vehicle(
+            make="make1",
+            model="model1",
+            year="2001",
+            is_favourite=True,
+            owner=new_user,
+        )
+        db.session.add(new_vehicle_1)
+        db.session.commit()
+        yield new_vehicle_1.id
+        db.session.delete(new_vehicle_1)
+        db.session.commit()
+
+
+@pytest.fixture(scope="function")
+def secondary_vehicle_id_2(app_fixture, secondary_user_id):
+    with app_fixture.app_context():
+        new_user = User.query.get(secondary_user_id)
+        new_vehicle_2 = Vehicle(
+            make="make2",
+            model="model2",
+            year="2002",
+            is_favourite=False,
+            owner=new_user,
+        )
+        db.session.add(new_vehicle_2)
+        db.session.commit()
+        yield new_vehicle_2.id
+        db.session.delete(new_vehicle_2)
+        db.session.commit()
+
+
+@pytest.mark.xfail
+def test_set_fav_vehicle__bug_set_for_other_user(
+    app_fixture,
+    test_user_id,
+    secondary_vehicle_id_1,
+    secondary_vehicle_id_2,
+    secondary_user_id,
+):
+    with app_fixture.app_context():
+        test_user = User.query.get(test_user_id)
+
+        assert secondary_user_id.get_favourite_vehicle().id == secondary_vehicle_id_1
+        with app_fixture.test_client(user=test_user) as test_client_authenticated:
+            resp = test_client_authenticated.get(
+                f"/set_fav_vehicle/{secondary_user_id}/{secondary_vehicle_id_2}",
+                follow_redirects=True,
+            )
+        assert resp.status_code == 200
+        assert secondary_user_id.get_favourite_vehicle().id != secondary_vehicle_id_2
+
+
 def test_add_vehicle__unauthenticated(test_client):
     resp = test_client.get(f"/add_vehicle", follow_redirects=True)
     assert resp.status_code == 200
