@@ -6,7 +6,6 @@ from fuel_logger.utils.stats import compute_stats_from_fillup_df
 
 from datetime import datetime, timedelta
 from sqlalchemy import and_
-from flask import flash
 
 import pandas as pd
 
@@ -39,10 +38,11 @@ class Vehicle(db.Model):
             df["lp100k"] = df.fuel_amt_l / df.dist_km * 100
             df["mpg"] = MPG_LP100K / df.lp100k
             df["mpg_imp"] = MPG_IMP_PER_MPG * df.mpg
-        except Exception as e:
-            flash(f"Problem loading fillups: {e}")
+        except Exception:
             df = pd.DataFrame(
                 columns=[
+                    "id",
+                    "vehicle_id",
                     "odometer_km",
                     "odometer_mi",
                     "dist_km",
@@ -68,7 +68,8 @@ class Vehicle(db.Model):
     def bulk_upload_logs(self, df):
         df.timestamp = df.timestamp.apply(
             lambda x: datetime.strptime(x.split(" ")[0], "%Y-%m-%d")
-            + timedelta(hours=12)
+            if isinstance(x, str)
+            else x + timedelta(hours=12)
         )
         f = lambda x: self.fillups.append(
             Fillup(

@@ -43,6 +43,6 @@ class Fillup(db.Model):
         return self.mpg * MPG_IMP_PER_MPG if self.lp100k else None
 
     def __repr__(self):
-        return "<Fillup date={}, vehicle={}, fuel_L={}, odo_km={}>".format(
+        return "<Fillup date={}, vehicle={}, fuel_L={:0.1f}, odo_km={}>".format(
             self.timestamp, self.vehicle.model, self.fuel_amt_l, self.odometer_km
         )

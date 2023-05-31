@@ -1,6 +1,5 @@
 import pytest
 from fuel_logger import db
-import flask_migrate
 from fuel_logger.models import User, Vehicle
 from requests.auth import _basic_auth_str
 
@@ -20,27 +19,17 @@ def test_password():
     return "samplepassword"
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def basic_auth_header(test_username, test_password):
     return {"Authorization": _basic_auth_str(test_username, test_password)}
 
 
-@pytest.fixture(autouse=True, scope="session")
-def setup_database(app_fixture):
-    with app_fixture.app_context():
-        flask_migrate.upgrade(directory="fuel_logger/migrations")
-        yield
-
-    with app_fixture.app_context():
-        flask_migrate.downgrade(directory="fuel_logger/migrations", revision="base")
-
-
-@pytest.fixture()
+@pytest.fixture(scope="session")
 def test_client(app_fixture):
     yield app_fixture.test_client()
 
 
-@pytest.fixture(autouse=True, scope="session")
+@pytest.fixture(autouse=True, scope="module")
 def test_vehicle_id(app_fixture):
     with app_fixture.app_context():
         vehicle = Vehicle(
@@ -58,7 +47,7 @@ def test_vehicle_id(app_fixture):
         db.session.commit()
 
 
-@pytest.fixture(autouse=True, scope="session")
+@pytest.fixture(autouse=True, scope="module")
 def test_user_id(
     test_vehicle_id, app_fixture, test_username, test_password, test_user_email
 ):

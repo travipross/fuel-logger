@@ -36,3 +36,10 @@ class TestingConfig:
     MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
     ADMINS = ["no-reply@fuel-logger.herokuapp.com"]
     WTF_CSRF_ENABLED = os.environ.get("WTF_CSRF_ENABLED") is not None
+    PRESERVE_CONTEXT_ON_EXCEPTION = (
+        False  # https://github.com/jarus/flask-testing/issues/21
+    )
+    TESTING = True
+    SERVER_NAME = "test.app.dev"
+    APPLICATION_ROOT = "/test"
+    PREFERRED_URL_SCHEME = "http"
