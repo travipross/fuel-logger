@@ -2,6 +2,7 @@ from fuel_logger import db, KM_PER_MILE
 from fuel_logger.fuel_logs import bp
 from fuel_logger.fuel_logs.forms import FillupForm, ImportForm
 from fuel_logger.models import Vehicle, Fillup
+from werkzeug.exceptions import Forbidden
 
 from flask import (
     render_template,
@@ -23,9 +24,7 @@ import pandas as pd
 def logs(vehicle_id):
     v = Vehicle.query.get_or_404(vehicle_id)
     if v.owner != current_user:
-        return render_template(
-            "403.html", message="You don't have access to these logs"
-        )
+        raise Forbidden("You have no access to these logs")
     g.vehicle = v
 
     form = FillupForm()
