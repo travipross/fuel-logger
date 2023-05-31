@@ -68,6 +68,7 @@ def logs(vehicle_id):
 
 
 @bp.route("/logs/<vehicle_id>/bulk_upload", methods=["GET", "POST"])
+@login_required
 def bulk_upload(vehicle_id):
     vehicle = Vehicle.query.get_or_404(vehicle_id)
     form = ImportForm()
@@ -98,8 +99,11 @@ def bulk_upload(vehicle_id):
 
 
 @bp.route("/logs/<vehicle_id>/bulk_download")
+@login_required
 def bulk_download(vehicle_id):
     v = Vehicle.query.get_or_404(vehicle_id)
+    if v.owner != current_user:
+        raise Forbidden("You have no access to these logs")
     df = v.get_stats_df()
     csv = df.to_csv(
         index=False,
@@ -125,8 +129,11 @@ def bulk_download(vehicle_id):
 
 
 @bp.route("/logs/<vehicle_id>/bulk_delete", methods=["DELETE"])
+@login_required
 def bulk_delete(vehicle_id):
     vehicle = Vehicle.query.get_or_404(vehicle_id)
+    if vehicle.owner != current_user:
+        raise Forbidden("You have no access to these logs")
     for f in vehicle.fillups:
         db.session.delete(f)
     try:
@@ -140,8 +147,11 @@ def bulk_delete(vehicle_id):
 
 
 @bp.route("/logs/delete/<log_id>", methods=["DELETE"])
+@login_required
 def delete_log(log_id):
     l = Fillup.query.get_or_404(log_id)
+    if l.vehicle.owner != current_user:
+        raise Forbidden("You have no access to these logs")
     try:
         db.session.delete(l)
         db.session.commit()
