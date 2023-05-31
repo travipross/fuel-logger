@@ -25,3 +25,10 @@ def internal_error(error):
     if wants_json_response():
         return api_error_response(500)
     return render_template("500.html"), 500
+
+
+@bp.app_errorhandler(403)
+def forbidden_error(error):
+    if wants_json_response():
+        return api_error_response(403, message=str(error))
+    return render_template("403.html", message=str(error)), 403

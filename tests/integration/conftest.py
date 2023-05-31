@@ -1,7 +1,8 @@
 import pytest
 from fuel_logger import db
-from fuel_logger.models import User, Vehicle
+from fuel_logger.models import User, Vehicle, Fillup
 from requests.auth import _basic_auth_str
+from datetime import datetime
 
 
 @pytest.fixture(scope="session")
@@ -67,3 +68,40 @@ def test_user_id(
     with app_fixture.app_context():
         db.session.delete(user)
         db.session.commit()
+
+
+@pytest.fixture
+def sample_fillup_id_1(app_fixture, test_vehicle_id):
+    with app_fixture.app_context():
+        fillup = Fillup(
+            vehicle_id=test_vehicle_id,
+            timestamp=datetime(year=2023, month=1, day=1),
+            odometer_km=500,
+            fuel_amt_l=50,
+        )
+        db.session.add(fillup)
+        db.session.commit()
+        yield fillup.id
+        db.session.delete(fillup)
+        db.session.commit()
+
+
+@pytest.fixture
+def sample_fillup_id_2(app_fixture, test_vehicle_id):
+    with app_fixture.app_context():
+        fillup = Fillup(
+            vehicle_id=test_vehicle_id,
+            timestamp=datetime(year=2023, month=1, day=15),
+            odometer_km=1000,
+            fuel_amt_l=25,
+        )
+        db.session.add(fillup)
+        db.session.commit()
+        yield fillup.id
+        db.session.delete(fillup)
+        db.session.commit()
+
+
+@pytest.fixture
+def sample_fillup_ids(sample_fillup_id_1, sample_fillup_id_2):
+    yield [sample_fillup_id_1, sample_fillup_id_2]
