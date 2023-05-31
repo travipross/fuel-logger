@@ -41,6 +41,8 @@ class Vehicle(db.Model):
         except Exception:
             df = pd.DataFrame(
                 columns=[
+                    "id",
+                    "vehicle_id",
                     "odometer_km",
                     "odometer_mi",
                     "dist_km",
