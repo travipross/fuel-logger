@@ -149,6 +149,40 @@ def test_logs__delete(
         assert sample_vehicle.fillups.count() == 1
 
 
+def test_logs__delete_error(
+    app_fixture,
+    test_vehicle_id,
+    test_user_id,
+    sample_fillup_id_1,
+    sample_fillup_ids,
+    mocker,
+):
+    mocked_fn = mocker.MagicMock(
+        "fuel_logger.fuel_logs.routes.db.session.commit", side_effect=Exception
+    )
+    mocker.patch("fuel_logger.fuel_logs.routes.db.session.commit", mocked_fn)
+    with app_fixture.app_context():
+        test_user = User.query.get(test_user_id)
+        sample_vehicle = Vehicle.query.get(test_vehicle_id)
+
+        assert sample_vehicle.fillups.count() == 2
+        with app_fixture.test_client(user=test_user) as test_client_authenticated:
+            resp = test_client_authenticated.delete(
+                f"/logs/delete/{sample_fillup_id_1}"
+            )
+
+        assert resp.status_code == 500
+        assert sample_vehicle.fillups.count() == 2
+
+        with app_fixture.test_client(user=test_user) as test_client_authenticated:
+            resp = test_client_authenticated.delete(
+                f"/logs/delete/{sample_fillup_id_1+69420}"
+            )
+
+        assert resp.status_code == 404
+        assert sample_vehicle.fillups.count() == 2
+
+
 def test_logs__bulk_delete(
     app_fixture, test_vehicle_id, test_user_id, sample_fillup_id_1, sample_fillup_ids
 ):
@@ -164,3 +198,30 @@ def test_logs__bulk_delete(
 
         assert resp.status_code == 200
         assert sample_vehicle.fillups.count() == 0
+
+
+def test_logs__bulk_delete_error(
+    app_fixture,
+    test_vehicle_id,
+    test_user_id,
+    sample_fillup_id_1,
+    sample_fillup_ids,
+    mocker,
+):
+    mocked_fn = mocker.MagicMock(
+        "fuel_logger.fuel_logs.routes.db.session.commit", side_effect=Exception
+    )
+    mocker.patch("fuel_logger.fuel_logs.routes.db.session.commit", mocked_fn)
+
+    with app_fixture.app_context():
+        test_user = User.query.get(test_user_id)
+        sample_vehicle = Vehicle.query.get(test_vehicle_id)
+
+        assert sample_vehicle.fillups.count() == 2
+        with app_fixture.test_client(user=test_user) as test_client_authenticated:
+            resp = test_client_authenticated.delete(
+                f"/logs/{test_vehicle_id}/bulk_delete"
+            )
+
+        assert resp.status_code == 500
+        assert sample_vehicle.fillups.count() == 2
