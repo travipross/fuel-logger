@@ -1,44 +1,5 @@
-from fuel_logger.models import Vehicle, Fillup
-from fuel_logger import db
-from datetime import datetime
+from fuel_logger.models import Vehicle
 import pytest
-
-
-@pytest.fixture
-def sample_fillup_id_1(app_fixture, sample_vehicle_id_1):
-    with app_fixture.app_context():
-        fillup = Fillup(
-            vehicle_id=sample_vehicle_id_1,
-            timestamp=datetime(year=2023, month=1, day=1),
-            odometer_km=500,
-            fuel_amt_l=30,
-        )
-        db.session.add(fillup)
-        db.session.commit()
-        yield fillup.id
-        db.session.delete(fillup)
-        db.session.commit()
-
-
-@pytest.fixture
-def sample_fillup_id_2(app_fixture, sample_vehicle_id_1):
-    with app_fixture.app_context():
-        fillup = Fillup(
-            vehicle_id=sample_vehicle_id_1,
-            timestamp=datetime(year=2023, month=1, day=15),
-            odometer_km=1000,
-            fuel_amt_l=32,
-        )
-        db.session.add(fillup)
-        db.session.commit()
-        yield fillup.id
-        db.session.delete(fillup)
-        db.session.commit()
-
-
-@pytest.fixture
-def sample_fillup_ids(sample_fillup_id_1, sample_fillup_id_2):
-    yield [sample_fillup_id_1, sample_fillup_id_2]
 
 
 def test_vehicles_get_stats_df__empty(app_fixture, sample_vehicle_id_1):
