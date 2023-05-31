@@ -77,9 +77,6 @@ def bulk_upload(vehicle_id):
             flash("No file detected")
             return redirect(request.url)
         file = request.files["file_obj"]
-        if file.filename == "":
-            flash("no file selected")
-            return redirect(request.url)
         if file and file.filename.endswith(".csv"):
             df = pd.read_csv(file)
             required_cols = {"timestamp", "odometer_km", "fuel_amt_l"}
