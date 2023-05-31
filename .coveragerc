@@ -1,3 +1,4 @@
 [run]
 omit =
     fuel_logger/migrations/*
+    fuel_logger/fuel_logger.py
