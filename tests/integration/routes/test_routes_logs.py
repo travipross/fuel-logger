@@ -106,18 +106,20 @@ def test_logs__post(app_fixture, test_user_id, test_vehicle_id):
         db.session.commit()
 
 
-def test_logs__post_invalid(app_fixture, test_user_id, test_vehicle_id):
+def test_logs__post_invalid(
+    app_fixture, test_user_id, test_vehicle_id, sample_fillup_id_1
+):
     with app_fixture.app_context():
         test_user = User.query.get(test_user_id)
         test_vehicle = Vehicle.query.get(test_vehicle_id)
 
-        assert test_vehicle.fillups.count() == 0
+        assert test_vehicle.fillups.count() == 1
         with app_fixture.test_client(user=test_user) as test_client_authenticated:
             resp = test_client_authenticated.post(
                 f"/logs/{test_vehicle_id}",
                 follow_redirects=True,
                 data={
-                    "odometer": 500,
+                    "odometer": 1,
                     "fuel": 20,
                     "date": "2020-04-20",
                     "time": "asdgasdfasdf",
@@ -127,7 +129,7 @@ def test_logs__post_invalid(app_fixture, test_user_id, test_vehicle_id):
         assert resp.status_code == 200
         assert "Your fuel log has been updated" not in resp.text
 
-        assert test_vehicle.fillups.count() == 0
+        assert test_vehicle.fillups.count() == 1
 
 
 def test_logs__delete(
