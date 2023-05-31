@@ -32,7 +32,7 @@ def login():
     return render_template("login.html", title="Sign In", form=form)
 
 
-@bp.route("/logout")
+@bp.route("/logout", methods=["GET", "POST"])
 @login_required
 def logout():
     logout_user()
