@@ -27,7 +27,7 @@ def basic_auth_header(test_username, test_password):
 
 @pytest.fixture(scope="session")
 def test_client(app_fixture):
-    yield app_fixture.test_client(default_content_type="text/html")
+    yield app_fixture.test_client()
 
 
 @pytest.fixture(autouse=True, scope="module")
