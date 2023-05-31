@@ -40,3 +40,6 @@ class TestingConfig:
         False  # https://github.com/jarus/flask-testing/issues/21
     )
     TESTING = True
+    SERVER_NAME = "test.app.dev"
+    APPLICATION_ROOT = "/test"
+    PREFERRED_URL_SCHEME = "http"
