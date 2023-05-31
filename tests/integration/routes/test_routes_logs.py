@@ -265,7 +265,6 @@ def test_logs_bulk_upload__get(
     test_vehicle_id,
     test_user_id,
 ):
-
     with app_fixture.app_context():
         test_user = User.query.get(test_user_id)
         sample_vehicle = Vehicle.query.get(test_vehicle_id)
