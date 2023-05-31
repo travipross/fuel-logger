@@ -13,6 +13,18 @@ def corolla_df():
     )
 
 
+@pytest.fixture
+def fillups_csv():
+    with open("tests/resources/fuel_logs_Corolla.csv", mode="rb") as file:
+        yield file
+
+
+@pytest.fixture
+def invalid_csv():
+    with open("tests/resources/fuel_logs_Corolla_invalid.csv", mode="rb") as file:
+        yield file
+
+
 @pytest.fixture(scope="session")
 def app_fixture():
     app_fixture = create_app(config_class=TestingConfig)
