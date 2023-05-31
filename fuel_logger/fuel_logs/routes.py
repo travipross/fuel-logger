@@ -93,7 +93,9 @@ def bulk_upload(vehicle_id):
                 db.session.commit()
             except:
                 db.session.rollback()
-            return redirect(url_for("logs", vehicle_id=vehicle_id))
+                flash("Error uploading logs")
+                return redirect(request.url)
+            return redirect(url_for("fuel_logs.logs", vehicle_id=vehicle_id))
 
     return render_template("upload.html", form=form)
 
