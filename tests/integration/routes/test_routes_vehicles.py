@@ -25,7 +25,6 @@ def test_garage__unauthenticated(test_client):
 def test_set_fav_vehicle__exists(
     app_fixture, test_user_id, test_vehicle_id, secondary_vehicle_id
 ):
-
     with app_fixture.app_context():
         test_user = db.session.get(User, test_user_id)
         test_vehicle = db.session.get(Vehicle, test_vehicle_id)
