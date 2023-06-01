@@ -6,7 +6,7 @@ from fuel_logger.models import Vehicle, Fillup
 @pytest.fixture
 def sample_fillup_ids(app_fixture, test_vehicle_id):
     with app_fixture.app_context():
-        vehicle = Vehicle.query.get(test_vehicle_id)
+        vehicle = db.session.get(Vehicle, test_vehicle_id)
         # confirm initially empty
         assert vehicle.fillups.count() == 0
 
@@ -33,10 +33,15 @@ def sample_fillup_ids(app_fixture, test_vehicle_id):
 
     # Delete fillups
     with app_fixture.app_context():
-        Fillup.query.where(Fillup.id.in_(fillup_ids)).delete()
+        db.session.execute(db.delete(Fillup).where(Fillup.id.in_(fillup_ids)))
         db.session.commit()
         # Confirm deletion was successful
-        assert Fillup.query.where(Fillup.id.in_(fillup_ids)).count() == 0
+        assert (
+            db.session.scalar(
+                db.select(db.func.count(Fillup.id)).where(Fillup.id.in_(fillup_ids))
+            )
+            == 0
+        )
 
 
 def test_get_logs__no_vehicle_id(test_client, basic_auth_header):

@@ -1,11 +1,12 @@
 import pytest
 from fuel_logger.models import User
+from fuel_logger import db
 
 
 @pytest.fixture
 def test_token(app_fixture, test_user_id):
     with app_fixture.app_context():
-        user = User.query.get(test_user_id)
+        user = db.session.get(User, test_user_id)
         assert user is not None
 
         token = user.get_api_token()

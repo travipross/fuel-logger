@@ -5,7 +5,6 @@ from flask_login import UserMixin
 from time import time
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy import select
 
 import jwt
 import base64
