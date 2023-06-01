@@ -1,5 +1,6 @@
-from fuel_logger.models import User, Vehicle
+from fuel_logger.models import User
 from werkzeug.exceptions import InternalServerError
+from fuel_logger import db
 
 
 def test_404__html(test_client):
@@ -27,7 +28,7 @@ def test_500__html(app_fixture, test_user_id, mocker):
     mocker.patch("fuel_logger.vehicles.forms.VehicleForm.validate_on_submit", mocked_fn)
 
     with app_fixture.app_context():
-        test_user = User.query.get(test_user_id)
+        test_user = db.session.get(User, test_user_id)
         with app_fixture.test_client(user=test_user) as test_client_authenticated:
             resp = test_client_authenticated.post(
                 "/add_vehicle",
@@ -54,7 +55,7 @@ def test_500__json(app_fixture, test_user_id, mocker):
     mocker.patch("fuel_logger.vehicles.forms.VehicleForm.validate_on_submit", mocked_fn)
 
     with app_fixture.app_context():
-        test_user = User.query.get(test_user_id)
+        test_user = db.session.get(User, test_user_id)
         with app_fixture.test_client(user=test_user) as test_client_authenticated:
             resp = test_client_authenticated.post(
                 "/add_vehicle",

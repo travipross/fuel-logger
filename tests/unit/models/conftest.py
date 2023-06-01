@@ -32,7 +32,7 @@ def sample_user_id(app_fixture, sample_user_username, sample_user_email):
 @pytest.fixture(autouse=True, scope="function")
 def sample_vehicle_id_1(app_fixture, sample_user_id):
     with app_fixture.app_context():
-        sample_user = User.query.get(sample_user_id)
+        sample_user = db.session.get(User, sample_user_id)
         vehicle_1 = Vehicle(
             make="testmake1",
             model="testmodel1",
@@ -50,7 +50,7 @@ def sample_vehicle_id_1(app_fixture, sample_user_id):
 @pytest.fixture(autouse=True, scope="function")
 def sample_vehicle_id_2(app_fixture, sample_user_id):
     with app_fixture.app_context():
-        sample_user = User.query.get(sample_user_id)
+        sample_user = db.session.get(User, sample_user_id)
         vehicle_2 = Vehicle(
             make="testmake2",
             model="testmodel2",

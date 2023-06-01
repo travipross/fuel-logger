@@ -1,6 +1,5 @@
 from fuel_logger.models import User
 from fuel_logger import db
-from sqlalchemy import select
 
 
 def test_login_get__unauthenticated(app_fixture, test_client):
@@ -136,7 +135,7 @@ def test_register__new_user(app_fixture, test_client):
     with app_fixture.app_context():
         assert (
             db.session.execute(
-                select(User).filter_by(username="newusername")
+                db.select(User).filter_by(username="newusername")
             ).one_or_none()
             is None
         )

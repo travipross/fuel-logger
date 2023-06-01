@@ -28,7 +28,7 @@ class FillupForm(FlaskForm):
 
     def validate_odometer(self, odometer):
         last_odo = (
-            db.session.query(func.max(Fillup.odometer_km))
+            db.session.query(db.func.max(Fillup.odometer_km))
             .filter_by(vehicle_id=g.vehicle.id)
             .scalar()
             or 0
