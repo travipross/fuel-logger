@@ -28,7 +28,7 @@ def add_vehicle():
 @bp.route("/garage/<user_id>")
 @login_required
 def garage(user_id):
-    u = User.query.get(user_id)
+    u = db.session.get(User, user_id)
     if u != current_user:
         return (
             render_template(
@@ -44,7 +44,7 @@ def garage(user_id):
 @bp.route("/set_fav_vehicle/<user_id>/<vehicle_id>")
 @login_required
 def set_fav_vehicle(user_id, vehicle_id):
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)
 
     if user is None:
         flash("invalid user")

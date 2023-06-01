@@ -5,6 +5,7 @@ from flask_login import UserMixin
 from time import time
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy import select
 
 import jwt
 import base64
@@ -38,7 +39,7 @@ class User(UserMixin, db.Model):
             )["reset_password"]
         except:
             return
-        return User.query.get(id)
+        return db.session.get(User, id)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -91,4 +92,4 @@ class User(UserMixin, db.Model):
 
 @login.user_loader
 def load_user(id):
-    return User.query.get(int(id))
+    return db.session.get(User, int(id))

@@ -22,7 +22,7 @@ import pandas as pd
 @bp.route("/logs/<vehicle_id>", methods=["GET", "POST"])
 @login_required
 def logs(vehicle_id):
-    v = Vehicle.query.get_or_404(vehicle_id)
+    v = db.get_or_404(Vehicle, vehicle_id)
     if v.owner != current_user:
         raise Forbidden("You have no access to these logs")
     g.vehicle = v
@@ -70,7 +70,7 @@ def logs(vehicle_id):
 @bp.route("/logs/<vehicle_id>/bulk_upload", methods=["GET", "POST"])
 @login_required
 def bulk_upload(vehicle_id):
-    vehicle = Vehicle.query.get_or_404(vehicle_id)
+    vehicle = db.get_or_404(Vehicle, vehicle_id)
     form = ImportForm()
     if request.method == "POST":
         if "file_obj" not in request.files:
@@ -100,7 +100,7 @@ def bulk_upload(vehicle_id):
 @bp.route("/logs/<vehicle_id>/bulk_download")
 @login_required
 def bulk_download(vehicle_id):
-    v = Vehicle.query.get_or_404(vehicle_id)
+    v = db.get_or_404(Vehicle, vehicle_id)
     if v.owner != current_user:
         raise Forbidden("You have no access to these logs")
     df = v.get_stats_df()
@@ -130,7 +130,7 @@ def bulk_download(vehicle_id):
 @bp.route("/logs/<vehicle_id>/bulk_delete", methods=["DELETE"])
 @login_required
 def bulk_delete(vehicle_id):
-    vehicle = Vehicle.query.get_or_404(vehicle_id)
+    vehicle = db.get_or_404(Vehicle, vehicle_id)
     if vehicle.owner != current_user:
         raise Forbidden("You have no access to these logs")
     for f in vehicle.fillups:
@@ -148,7 +148,7 @@ def bulk_delete(vehicle_id):
 @bp.route("/logs/delete/<log_id>", methods=["DELETE"])
 @login_required
 def delete_log(log_id):
-    l = Fillup.query.get_or_404(log_id)
+    l = db.get_or_404(Fillup, log_id)
     if l.vehicle.owner != current_user:
         raise Forbidden("You have no access to these logs")
     try:

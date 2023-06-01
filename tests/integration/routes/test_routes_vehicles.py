@@ -5,7 +5,7 @@ import pytest
 
 def test_garage__default(app_fixture, test_user_id, test_username):
     with app_fixture.app_context():
-        test_user = User.query.get(test_user_id)
+        test_user = db.session.get(User, test_user_id)
 
         with app_fixture.test_client(user=test_user) as test_client_authenticated:
             resp = test_client_authenticated.get(
@@ -18,7 +18,7 @@ def test_garage__default(app_fixture, test_user_id, test_username):
 
 def test_garage__random_user_garage(app_fixture, test_user_id):
     with app_fixture.app_context():
-        test_user = User.query.get(test_user_id)
+        test_user = db.session.get(User, test_user_id)
 
         with app_fixture.test_client(user=test_user) as test_client_authenticated:
             resp = test_client_authenticated.get(
@@ -44,7 +44,7 @@ def secondary_vehicle_id(app_fixture, test_user_id):
         year="1234",
     )
     with app_fixture.app_context():
-        user = User.query.get(test_user_id)
+        user = db.session.get(User, test_user_id)
         user.vehicles.append(v)
         db.session.flush()
         assert v.is_favourite == False
@@ -60,7 +60,7 @@ def test_set_fav_vehicle__exists(
     app_fixture, test_user_id, test_vehicle_id, secondary_vehicle_id
 ):
     with app_fixture.app_context():
-        test_user = User.query.get(test_user_id)
+        test_user = db.session.get(User, test_user_id)
         with app_fixture.test_client(user=test_user) as test_client_authenticated:
             resp = test_client_authenticated.get(
                 f"/set_fav_vehicle/{test_user_id}/{test_vehicle_id}",
@@ -70,7 +70,7 @@ def test_set_fav_vehicle__exists(
         assert resp.status_code == 200
 
         with app_fixture.app_context():
-            user = User.query.get(test_user_id)
+            user = db.session.get(User, test_user_id)
             assert user.get_favourite_vehicle().id == test_vehicle_id
 
         with app_fixture.test_client(user=test_user) as test_client_authenticated:
@@ -82,7 +82,7 @@ def test_set_fav_vehicle__exists(
         assert resp.status_code == 200
 
         with app_fixture.app_context():
-            user = User.query.get(test_user_id)
+            user = db.session.get(User, test_user_id)
             assert user.get_favourite_vehicle().id == secondary_vehicle_id
 
 
@@ -90,7 +90,7 @@ def test_set_fav_vehicle__nonexistent(
     app_fixture, test_user_id, test_vehicle_id, test_username
 ):
     with app_fixture.app_context():
-        test_user = User.query.get(test_user_id)
+        test_user = db.session.get(User, test_user_id)
         with app_fixture.test_client(user=test_user) as test_client_authenticated:
             resp = test_client_authenticated.get(
                 f"/set_fav_vehicle/{test_user_id}/{test_vehicle_id}",
@@ -100,11 +100,11 @@ def test_set_fav_vehicle__nonexistent(
         assert resp.status_code == 200
 
         with app_fixture.app_context():
-            user = User.query.get(test_user_id)
+            user = db.session.get(User, test_user_id)
             assert user.get_favourite_vehicle().id == test_vehicle_id
 
         bad_user_id = test_user_id + 69
-        assert User.query.get(bad_user_id) is None
+        assert db.session.get(User, bad_user_id) is None
 
         with app_fixture.test_client(user=test_user) as test_client_authenticated:
             resp = test_client_authenticated.get(
@@ -117,7 +117,7 @@ def test_set_fav_vehicle__nonexistent(
         assert "invalid user" in resp.text
 
         bad_vehicle_id = test_vehicle_id + 69
-        assert User.query.get(bad_vehicle_id) is None
+        assert db.session.get(User, bad_vehicle_id) is None
 
         with app_fixture.test_client(user=test_user) as test_client_authenticated:
             resp = test_client_authenticated.get(
@@ -148,7 +148,7 @@ def secondary_user_id(app_fixture):
 @pytest.fixture(scope="function")
 def secondary_vehicle_id_1(app_fixture, secondary_user_id):
     with app_fixture.app_context():
-        new_user = User.query.get(secondary_user_id)
+        new_user = db.session.get(User, secondary_user_id)
         new_vehicle_1 = Vehicle(
             make="make1",
             model="model1",
@@ -166,7 +166,7 @@ def secondary_vehicle_id_1(app_fixture, secondary_user_id):
 @pytest.fixture(scope="function")
 def secondary_vehicle_id_2(app_fixture, secondary_user_id):
     with app_fixture.app_context():
-        new_user = User.query.get(secondary_user_id)
+        new_user = db.session.get(User, secondary_user_id)
         new_vehicle_2 = Vehicle(
             make="make2",
             model="model2",
@@ -189,8 +189,8 @@ def test_set_fav_vehicle__bug_set_for_other_user(
     secondary_user_id,
 ):
     with app_fixture.app_context():
-        test_user = User.query.get(test_user_id)
-        secondary_user = User.query.get(secondary_user_id)
+        test_user = db.session.get(User, test_user_id)
+        secondary_user = db.session.get(User, secondary_user_id)
 
         # check other user's current favourite vehicle
         assert secondary_user.get_favourite_vehicle().id == secondary_vehicle_id_1
@@ -216,7 +216,7 @@ def test_add_vehicle__unauthenticated(test_client):
 
 def test_add_vehicle__get(app_fixture, test_user_id):
     with app_fixture.app_context():
-        test_user = User.query.get(test_user_id)
+        test_user = db.session.get(User, test_user_id)
         with app_fixture.test_client(user=test_user) as test_client_authenticated:
             resp = test_client_authenticated.get(
                 f"/add_vehicle",
@@ -229,7 +229,7 @@ def test_add_vehicle__get(app_fixture, test_user_id):
 
 def test_add_vehicle__post_complete(app_fixture, test_user_id, test_vehicle_id):
     with app_fixture.app_context():
-        test_user = User.query.get(test_user_id)
+        test_user = db.session.get(User, test_user_id)
 
         assert test_user.vehicles.filter(Vehicle.id != test_vehicle_id).count() == 0
 
