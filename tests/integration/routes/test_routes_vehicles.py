@@ -181,7 +181,6 @@ def secondary_vehicle_id_2(app_fixture, secondary_user_id):
         db.session.commit()
 
 
-@pytest.mark.xfail(strict=True)
 def test_set_fav_vehicle__bug_set_for_other_user(
     app_fixture,
     test_user_id,
@@ -193,12 +192,17 @@ def test_set_fav_vehicle__bug_set_for_other_user(
         test_user = User.query.get(test_user_id)
         secondary_user = User.query.get(secondary_user_id)
 
+        # check other user's current favourite vehicle
         assert secondary_user.get_favourite_vehicle().id == secondary_vehicle_id_1
+
+        # attempt to set other user's favourite vehicle
         with app_fixture.test_client(user=test_user) as test_client_authenticated:
             resp = test_client_authenticated.get(
                 f"/set_fav_vehicle/{secondary_user_id}/{secondary_vehicle_id_2}",
                 follow_redirects=True,
             )
+
+        # Confirm an unauthorized error is raised and that the new favourite wasn't updated
         assert resp.status_code == 403
         assert secondary_user.get_favourite_vehicle().id != secondary_vehicle_id_2
 
