@@ -156,6 +156,25 @@ def test_register__new_user(app_fixture, test_client):
         db.session.commit()
 
 
+def test_register__existing_user(
+    app_fixture, test_client, test_username, test_user_email
+):
+    with app_fixture.app_context():
+        assert User.query.filter_by(username=test_username).one_or_none() is not None
+        resp = test_client.post(
+            "/auth/register",
+            follow_redirects=True,
+            data={
+                "username": test_username,
+                "email": test_user_email,
+                "password": "newpassword",
+                "password2": "newpassword",
+            },
+        )
+        assert resp.status_code == 200
+        assert "Register" in resp.text
+
+
 def test_password_reset_request__authenticated(app_fixture, test_user_id):
     with app_fixture.app_context():
         user = User.query.get(test_user_id)
