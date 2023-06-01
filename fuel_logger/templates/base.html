@@ -34,7 +34,7 @@
                 {% if current_user.is_anonymous %}
                 <li><a href="{{ url_for('auth.login') }}">Login</a></li>
                 {% else %}
-                <li><a href="{{ url_for('vehicles.garage', user_id=current_user.id) }}">My Garage</a></li>
+                <li><a href="{{ url_for('vehicles.garage') }}">My Garage</a></li>
                 <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
                 {% endif %}
             </ul>

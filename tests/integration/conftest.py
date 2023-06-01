@@ -1,8 +1,10 @@
-import pytest
-from fuel_logger import db
-from fuel_logger.models import User, Vehicle, Fillup
-from requests.auth import _basic_auth_str
 from datetime import datetime
+
+import pytest
+from requests.auth import _basic_auth_str
+
+from fuel_logger import db
+from fuel_logger.models import Fillup, User, Vehicle
 
 
 @pytest.fixture(scope="session")
@@ -105,3 +107,72 @@ def sample_fillup_id_2(app_fixture, test_vehicle_id):
 @pytest.fixture
 def sample_fillup_ids(sample_fillup_id_1, sample_fillup_id_2):
     yield [sample_fillup_id_1, sample_fillup_id_2]
+
+
+@pytest.fixture(scope="function")
+def secondary_vehicle_id_1(app_fixture, secondary_user_id):
+    with app_fixture.app_context():
+        new_user = db.session.get(User, secondary_user_id)
+        new_vehicle_1 = Vehicle(
+            make="make1",
+            model="model1",
+            year="2001",
+            is_favourite=True,
+            owner=new_user,
+        )
+        db.session.add(new_vehicle_1)
+        db.session.commit()
+        yield new_vehicle_1.id
+        db.session.delete(new_vehicle_1)
+        db.session.commit()
+
+
+@pytest.fixture(scope="function")
+def secondary_vehicle_id_2(app_fixture, secondary_user_id):
+    with app_fixture.app_context():
+        new_user = db.session.get(User, secondary_user_id)
+        new_vehicle_2 = Vehicle(
+            make="make2",
+            model="model2",
+            year="2002",
+            is_favourite=False,
+            owner=new_user,
+        )
+        db.session.add(new_vehicle_2)
+        db.session.commit()
+        yield new_vehicle_2.id
+        db.session.delete(new_vehicle_2)
+        db.session.commit()
+
+
+@pytest.fixture(scope="function")
+def secondary_user_id(app_fixture):
+    with app_fixture.app_context():
+        new_user = User(
+            username="secondary_user",
+            email="doesntmatter@ignore.com",
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        new_user_id = new_user.id
+        yield new_user_id
+        db.session.delete(new_user)
+        db.session.commit()
+
+
+@pytest.fixture
+def secondary_vehicle_id(app_fixture, test_user_id):
+    v = Vehicle(
+        make="MadeUpMake",
+        model="MadeUpModel",
+        year="1234",
+    )
+    with app_fixture.app_context():
+        user = db.session.get(User, test_user_id)
+        user.vehicles.append(v)
+        db.session.flush()
+        assert v.is_favourite == False
+        db.session.commit()
+        yield v.id
+        db.session.delete(v)
+        db.session.commit()

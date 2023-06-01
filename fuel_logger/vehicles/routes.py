@@ -21,48 +21,24 @@ def add_vehicle():
         current_user.vehicles.append(v)
         db.session.commit()
         flash("Your vehicle has been added")
-        return redirect(url_for("vehicles.garage", user_id=current_user.id))
+        return redirect(url_for("vehicles.garage"))
     return render_template("add_vehicle.html", form=form)
 
 
-@bp.route("/garage/<user_id>")
+@bp.route("/garage")
 @login_required
-def garage(user_id):
-    u = db.session.get(User, user_id)
-    if u != current_user:
-        return (
-            render_template(
-                "403.html", message="You don't have access to this garage."
-            ),
-            403,
-        )
-    return render_template("garage.html", user=u)
+def garage():
+    return render_template("garage.html")
 
 
-# TODO: Make authenticated route and get user id from session
-# TODO: Figure out if it's possible to set someone else's vehicle as a favourite
-@bp.route("/set_fav_vehicle/<user_id>/<vehicle_id>")
+@bp.route("/set_fav_vehicle/<vehicle_id>")
 @login_required
-def set_fav_vehicle(user_id, vehicle_id):
-    user = db.session.get(User, user_id)
-
-    if user is None:
-        flash("invalid user")
-        return redirect(url_for("vehicles.garage", user_id=user_id))
-
-    if user != current_user:
-        return (
-            render_template(
-                "403.html", message="You don't have access to this garage."
-            ),
-            403,
-        )
-
-    vehicle = user.vehicles.filter_by(id=vehicle_id).first()
+def set_fav_vehicle(vehicle_id):
+    vehicle = current_user.vehicles.filter_by(id=vehicle_id).first()
     if not vehicle:
         flash("invalid vehicle")
-        return redirect(url_for("vehicles.garage", user_id=user_id))
+        return redirect(url_for("vehicles.garage"))
 
-    user.set_favourite_vehicle(vehicle)
+    current_user.set_favourite_vehicle(vehicle)
     db.session.commit()
-    return redirect(url_for("vehicles.garage", user_id=user_id))
+    return redirect(url_for("vehicles.garage"))
