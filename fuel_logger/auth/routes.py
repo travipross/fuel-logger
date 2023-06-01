@@ -1,17 +1,17 @@
+from flask import flash, redirect, render_template, request, url_for
+from flask_login import current_user, login_required, login_user, logout_user
+from werkzeug.urls import url_parse
+
 from fuel_logger import db
 from fuel_logger.auth import bp
 from fuel_logger.auth.forms import (
     LoginForm,
     RegistrationForm,
-    ResetPasswordRequestForm,
     ResetPasswordForm,
+    ResetPasswordRequestForm,
 )
 from fuel_logger.models import User
 from fuel_logger.utils.email import send_password_reset_email
-
-from flask import redirect, url_for, flash, request, render_template
-from flask_login import login_required, current_user, login_user, logout_user
-from werkzeug.urls import url_parse
 
 
 @bp.route("/login", methods=["GET", "POST"])

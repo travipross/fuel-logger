@@ -1,4 +1,5 @@
 from flask.json import jsonify
+
 from fuel_logger import db
 from fuel_logger.api import bp
 from fuel_logger.api.auth import basic_auth, multi_auth

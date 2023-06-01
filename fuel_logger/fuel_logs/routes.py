@@ -1,22 +1,21 @@
-from fuel_logger import db, KM_PER_MILE
-from fuel_logger.fuel_logs import bp
-from fuel_logger.fuel_logs.forms import FillupForm, ImportForm
-from fuel_logger.models import Vehicle, Fillup
+import pandas as pd
+from flask import (
+    Response,
+    current_app,
+    flash,
+    g,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
+from flask_login import current_user, login_required
 from werkzeug.exceptions import Forbidden
 
-from flask import (
-    render_template,
-    flash,
-    redirect,
-    url_for,
-    g,
-    request,
-    current_app,
-    Response,
-)
-from flask_login import login_required, current_user
-
-import pandas as pd
+from fuel_logger import KM_PER_MILE, db
+from fuel_logger.fuel_logs import bp
+from fuel_logger.fuel_logs.forms import FillupForm, ImportForm
+from fuel_logger.models import Fillup, Vehicle
 
 
 @bp.route("/logs/<vehicle_id>", methods=["GET", "POST"])

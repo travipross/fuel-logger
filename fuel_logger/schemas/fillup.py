@@ -1,8 +1,7 @@
-from fuel_logger import ma
-from fuel_logger.models import Fillup, Vehicle
-from fuel_logger import db
-
 from marshmallow import fields
+
+from fuel_logger import db, ma
+from fuel_logger.models import Fillup, Vehicle
 
 
 class FillupSchema(ma.SQLAlchemyAutoSchema):

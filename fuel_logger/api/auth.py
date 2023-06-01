@@ -1,7 +1,7 @@
-from fuel_logger.models import User
-from fuel_logger.api.errors import error_response
-
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth, MultiAuth
+
+from fuel_logger.api.errors import error_response
+from fuel_logger.models import User
 
 basic_auth = HTTPBasicAuth()
 token_auth = HTTPTokenAuth()

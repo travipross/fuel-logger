@@ -1,14 +1,14 @@
-from fuel_logger import db, login
-
-from flask import current_app
-from flask_login import UserMixin
-from time import time
-from datetime import datetime, timedelta
-from werkzeug.security import generate_password_hash, check_password_hash
-
-import jwt
 import base64
 import os
+from datetime import datetime, timedelta
+from time import time
+
+import jwt
+from flask import current_app
+from flask_login import UserMixin
+from werkzeug.security import check_password_hash, generate_password_hash
+
+from fuel_logger import db, login
 
 
 class User(UserMixin, db.Model):

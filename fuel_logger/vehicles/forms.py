@@ -1,11 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import (
-    StringField,
-    SubmitField,
-    SelectField,
-)
-from wtforms.validators import DataRequired
+from wtforms import SelectField, StringField, SubmitField
 from wtforms.fields import IntegerField
+from wtforms.validators import DataRequired
 
 
 class VehicleForm(FlaskForm):

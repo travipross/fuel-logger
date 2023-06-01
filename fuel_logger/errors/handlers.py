@@ -1,8 +1,9 @@
-from flask.globals import request
-from fuel_logger import db
-from fuel_logger.errors import bp
-from fuel_logger.api.errors import error_response as api_error_response
 from flask import render_template
+from flask.globals import request
+
+from fuel_logger import db
+from fuel_logger.api.errors import error_response as api_error_response
+from fuel_logger.errors import bp
 
 
 def wants_json_response():

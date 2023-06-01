@@ -1,13 +1,13 @@
-from fuel_logger.config import Config
-
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from flask_login import LoginManager
-from flask_moment import Moment
 from flask_bootstrap import Bootstrap
+from flask_login import LoginManager
 from flask_mail import Mail
 from flask_marshmallow import Marshmallow
+from flask_migrate import Migrate
+from flask_moment import Moment
+from flask_sqlalchemy import SQLAlchemy
+
+from fuel_logger.config import Config
 
 LITRE_PER_GAL = 3.785
 LITRE_PER_GAL_IMP = 4.546

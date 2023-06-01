@@ -1,6 +1,6 @@
-from fuel_logger import db, KM_PER_MILE, MPG_IMP_PER_MPG, MPG_LP100K
-
 from datetime import datetime
+
+from fuel_logger import KM_PER_MILE, MPG_IMP_PER_MPG, MPG_LP100K, db
 
 
 class Fillup(db.Model):
