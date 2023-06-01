@@ -1,13 +1,14 @@
 from fuel_logger.models import User, Vehicle
 from fuel_logger.models.users import load_user
 from datetime import datetime, timedelta
+from fuel_logger import db
 
 
 def test_users_get_favourite_vehicle__set(
     app_fixture, sample_user_id, sample_vehicle_id_1
 ):
     with app_fixture.app_context():
-        user = User.query.get(sample_user_id)
+        user = db.session.get(User, sample_user_id)
         assert user.vehicles.filter_by(is_favourite=True).count() == 1
         assert user.get_favourite_vehicle().id == sample_vehicle_id_1
 
@@ -16,8 +17,8 @@ def test_users_get_favourite_vehicle__not_set(
     app_fixture, sample_user_id, sample_vehicle_id_1
 ):
     with app_fixture.app_context():
-        user = User.query.get(sample_user_id)
-        sample_vehicle = Vehicle.query.get(sample_vehicle_id_1)
+        user = db.session.get(User, sample_user_id)
+        sample_vehicle = db.session.get(Vehicle, sample_vehicle_id_1)
         first_vehicle = user.vehicles.first()
         sample_vehicle.is_favourite = False
         assert user.vehicles.filter_by(is_favourite=True).count() == 0
@@ -30,9 +31,9 @@ def test_users_set_favourite_vehicle(
     app_fixture, sample_user_id, sample_vehicle_id_1, sample_vehicle_id_2
 ):
     with app_fixture.app_context():
-        user = User.query.get(sample_user_id)
-        sample_vehicle_1 = Vehicle.query.get(sample_vehicle_id_1)
-        sample_vehicle_2 = Vehicle.query.get(sample_vehicle_id_2)
+        user = db.session.get(User, sample_user_id)
+        sample_vehicle_1 = db.session.get(Vehicle, sample_vehicle_id_1)
+        sample_vehicle_2 = db.session.get(Vehicle, sample_vehicle_id_2)
 
         assert user.vehicles.filter_by(is_favourite=True).count() == 1
         assert sample_vehicle_1.is_favourite == True
@@ -47,14 +48,14 @@ def test_users_set_favourite_vehicle(
 def test_load_user(app_fixture, sample_user_id):
     with app_fixture.app_context():
         loaded_user = load_user(str(sample_user_id))
-        sample_user = User.query.get(sample_user_id)
+        sample_user = db.session.get(User, sample_user_id)
 
         assert loaded_user.id == sample_user.id
 
 
 def test_to_dict(app_fixture, sample_user_id, sample_user_username, sample_user_email):
     with app_fixture.app_context():
-        user = User.query.get(sample_user_id)
+        user = db.session.get(User, sample_user_id)
 
         assert user.to_dict() == {
             "id": sample_user_id,
@@ -69,7 +70,7 @@ def test_to_dict(app_fixture, sample_user_id, sample_user_username, sample_user_
 
 def test_user_set_password(app_fixture, sample_user_id):
     with app_fixture.app_context():
-        user = User.query.get(sample_user_id)
+        user = db.session.get(User, sample_user_id)
 
         assert user.password_hash is None
 
@@ -81,7 +82,7 @@ def test_user_set_password(app_fixture, sample_user_id):
 
 def test_user_check_password(app_fixture, sample_user_id):
     with app_fixture.app_context():
-        user = User.query.get(sample_user_id)
+        user = db.session.get(User, sample_user_id)
 
         assert user.password_hash is None
 
@@ -96,13 +97,13 @@ def test_user_check_password(app_fixture, sample_user_id):
 
 def test_user_repr(app_fixture, sample_user_id, sample_user_username):
     with app_fixture.app_context():
-        user = User.query.get(sample_user_id)
+        user = db.session.get(User, sample_user_id)
         assert repr(user) == f"<User {sample_user_username}>"
 
 
 def test_user_get_api_token(app_fixture, sample_user_id):
     with app_fixture.app_context():
-        user = User.query.get(sample_user_id)
+        user = db.session.get(User, sample_user_id)
 
         assert user.api_token is None
         assert user.api_token_expiration is None
@@ -121,7 +122,7 @@ def test_user_get_api_token(app_fixture, sample_user_id):
 
 def test_user_check_token(app_fixture, sample_user_id):
     with app_fixture.app_context():
-        user = User.query.get(sample_user_id)
+        user = db.session.get(User, sample_user_id)
 
         assert user.api_token is None
         assert user.api_token_expiration is None
@@ -141,7 +142,7 @@ def test_user_check_token(app_fixture, sample_user_id):
 
 def test_user_revoke_token(app_fixture, sample_user_id):
     with app_fixture.app_context():
-        user = User.query.get(sample_user_id)
+        user = db.session.get(User, sample_user_id)
         token = user.get_api_token()
 
         # Returns correct user based on current token
@@ -154,7 +155,7 @@ def test_user_revoke_token(app_fixture, sample_user_id):
 
 def test_password_reset_token(app_fixture, sample_user_id):
     with app_fixture.app_context():
-        user = User.query.get(sample_user_id)
+        user = db.session.get(User, sample_user_id)
 
         token = user.get_reset_password_token()
         assert len(token) > 0
@@ -165,7 +166,7 @@ def test_password_reset_token(app_fixture, sample_user_id):
 
 def test_verify_reset_password_token(app_fixture, sample_user_id):
     with app_fixture.app_context():
-        user = User.query.get(sample_user_id)
+        user = db.session.get(User, sample_user_id)
         token = user.get_reset_password_token()
 
         # Assert the correct user was found from the token

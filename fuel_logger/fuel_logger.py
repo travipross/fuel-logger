@@ -1,5 +1,5 @@
 from fuel_logger import create_app, db
-from fuel_logger.models import User, Vehicle, Fillup
+from fuel_logger.models import Fillup, User, Vehicle
 
 app = create_app()
 

@@ -1,9 +1,9 @@
-from fuel_logger import mail
-
-from flask import current_app
-from flask_mail import Message
-from flask import render_template
 from threading import Thread
+
+from flask import current_app, render_template
+from flask_mail import Message
+
+from fuel_logger import mail
 
 
 def send_email(subject, sender, recipients, text_body, html_body):

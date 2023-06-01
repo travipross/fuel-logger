@@ -53,7 +53,7 @@ def test_user_id(
     test_vehicle_id, app_fixture, test_username, test_password, test_user_email
 ):
     with app_fixture.app_context():
-        test_vehicle = Vehicle.query.get(test_vehicle_id)
+        test_vehicle = db.session.get(Vehicle, test_vehicle_id)
         user = User(
             username=test_username,
             email=test_user_email,

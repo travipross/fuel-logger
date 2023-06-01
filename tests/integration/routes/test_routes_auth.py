@@ -1,6 +1,5 @@
 from fuel_logger.models import User
 from fuel_logger import db
-from flask_login import logout_user
 
 
 def test_login_get__unauthenticated(app_fixture, test_client):
@@ -12,7 +11,7 @@ def test_login_get__unauthenticated(app_fixture, test_client):
 
 def test_login_get__authenticated(app_fixture, test_user_id):
     with app_fixture.app_context():
-        user = User.query.get(test_user_id)
+        user = db.session.get(User, test_user_id)
         with app_fixture.test_client(user=user) as test_client_authenticated:
             resp = test_client_authenticated.get("/auth/login", follow_redirects=True)
             assert resp.status_code == 200
@@ -24,7 +23,7 @@ def test_login_post__correct_password(
     app_fixture, test_client, test_user_id, test_password, test_username
 ):
     with app_fixture.app_context():
-        user = User.query.get(test_user_id)
+        user = db.session.get(User, test_user_id)
         assert user.username == test_username
         assert user.check_password(test_password)
         resp = test_client.post(
@@ -59,7 +58,7 @@ def test_login__wrong_password(
     wrong_password = test_password + "s"
 
     with app_fixture.app_context():
-        user = User.query.get(test_user_id)
+        user = db.session.get(User, test_user_id)
         assert user.username == test_username
         assert not user.check_password(wrong_password)
         resp = test_client.post(
@@ -78,7 +77,7 @@ def test_login__wrong_password(
 
 def test_login_post__authenticated(app_fixture, test_user_id):
     with app_fixture.app_context():
-        user = User.query.get(test_user_id)
+        user = db.session.get(User, test_user_id)
         with app_fixture.test_client(user=user) as test_client_authenticated:
             resp = test_client_authenticated.post("/auth/login", follow_redirects=True)
             assert resp.status_code == 200
@@ -88,7 +87,7 @@ def test_login_post__authenticated(app_fixture, test_user_id):
 
 def test_logout(app_fixture, test_user_id):
     with app_fixture.app_context():
-        user = User.query.get(test_user_id)
+        user = db.session.get(User, test_user_id)
 
         with app_fixture.test_client(user=user) as test_client_authenticated:
             # Confirm signed in
@@ -115,7 +114,7 @@ def test_logout(app_fixture, test_user_id):
 
 def test_register__authenticated(app_fixture, test_user_id):
     with app_fixture.app_context():
-        user = User.query.get(test_user_id)
+        user = db.session.get(User, test_user_id)
         with app_fixture.test_client(user=user) as test_client_authenticated:
             # Confirm signed in
             resp = test_client_authenticated.get(
@@ -134,7 +133,12 @@ def test_register__get(app_fixture, test_client):
 
 def test_register__new_user(app_fixture, test_client):
     with app_fixture.app_context():
-        assert User.query.filter_by(username="newusername").one_or_none() is None
+        assert (
+            db.session.execute(
+                db.select(User).filter_by(username="newusername")
+            ).one_or_none()
+            is None
+        )
         resp = test_client.post(
             "/auth/register",
             follow_redirects=True,
@@ -177,7 +181,7 @@ def test_register__existing_user(
 
 def test_password_reset_request__authenticated(app_fixture, test_user_id):
     with app_fixture.app_context():
-        user = User.query.get(test_user_id)
+        user = db.session.get(User, test_user_id)
         with app_fixture.test_client(user=user) as test_client_authenticated:
             resp = test_client_authenticated.get(
                 "/auth/reset_password_request", follow_redirects=True
@@ -218,7 +222,7 @@ def test_password_reset_request__post(
 
 def test_reset_password__authenticated(app_fixture, test_user_id):
     with app_fixture.app_context():
-        user = User.query.get(test_user_id)
+        user = db.session.get(User, test_user_id)
         with app_fixture.test_client(user=user) as test_client_authenticated:
             resp = test_client_authenticated.get(
                 "/auth/reset_password/abcd", follow_redirects=True
@@ -242,7 +246,7 @@ def test_reset_password__post_invalid_token(
     app_fixture, test_client, test_user_id, test_password
 ):
     with app_fixture.app_context():
-        user = User.query.get(test_user_id)
+        user = db.session.get(User, test_user_id)
         resp = test_client.post(
             "/auth/reset_password/abcd",
             follow_redirects=True,
@@ -264,7 +268,7 @@ def test_reset_password__post_mismatch_password(
     app_fixture, test_client, test_user_id, test_password
 ):
     with app_fixture.app_context():
-        user = User.query.get(test_user_id)
+        user = db.session.get(User, test_user_id)
         token = user.get_reset_password_token()
         resp = test_client.post(
             f"/auth/reset_password/{token}",
@@ -286,7 +290,7 @@ def test_reset_password__post_valid(
     app_fixture, test_client, test_user_id, test_password
 ):
     with app_fixture.app_context():
-        user = User.query.get(test_user_id)
+        user = db.session.get(User, test_user_id)
         token = user.get_reset_password_token()
         resp = test_client.post(
             f"/auth/reset_password/{token}",

@@ -20,7 +20,7 @@ def vehicle_id_to_delete(app_fixture):
 
     # delete at teardown if object still exists
     with app_fixture.app_context():
-        if Vehicle.query.get(vehicle.id) is not None:
+        if db.session.get(Vehicle, vehicle.id) is not None:
             db.session.delete(vehicle)
             db.session.commit()
 
@@ -41,7 +41,7 @@ def test_vehicle_get(test_client, basic_auth_header, test_vehicle_id, app_fixtur
 
     # Confirm vehicle details returned by the api match what is expected
     with app_fixture.app_context():
-        test_vehicle = Vehicle.query.get(test_vehicle_id)
+        test_vehicle = db.session.get(Vehicle, test_vehicle_id)
 
     assert test_vehicle.make == resp.json["make"]
     assert test_vehicle.model == resp.json["model"]
@@ -60,11 +60,13 @@ def test_vehicle_create(test_client, basic_auth_header, app_fixture):
     # Ensure vehicle doesn't exist yet
     with app_fixture.app_context():
         assert (
-            Vehicle.query.filter_by(
-                make="TestMake",
-                model=random_model,
-                year=1999,
-            ).count()
+            db.session.scalar(
+                db.select(db.func.count(Vehicle.id)).filter_by(
+                    make="TestMake",
+                    model=random_model,
+                    year=1999,
+                )
+            )
             == 0
         )
 
@@ -102,7 +104,7 @@ def test_vehicle_delete(
 ):
     # Ensure vehicle exists
     with app_fixture.app_context():
-        assert Vehicle.query.get(vehicle_id_to_delete) is not None
+        assert db.session.get(Vehicle, vehicle_id_to_delete) is not None
 
     # Make HTTP DELETE request
     resp = test_client.delete(
@@ -115,4 +117,4 @@ def test_vehicle_delete(
 
     # Confirm vehicle no longer exists in database
     with app_fixture.app_context():
-        assert Vehicle.query.get(vehicle_id_to_delete) is None
+        assert db.session.get(Vehicle, vehicle_id_to_delete) is None

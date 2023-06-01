@@ -1,7 +1,7 @@
 from fuel_logger.models import User, Vehicle, Fillup
 from fuel_logger import db
 import pytest
-from datetime import datetime, date, time
+from datetime import datetime
 import pandas as pd
 import io
 
@@ -10,8 +10,8 @@ def test_logs__get(
     app_fixture, test_user_id, test_username, test_vehicle_id, sample_fillup_ids
 ):
     with app_fixture.app_context():
-        test_user = User.query.get(test_user_id)
-        test_vehicle = Vehicle.query.get(test_vehicle_id)
+        test_user = db.session.get(User, test_user_id)
+        test_vehicle = db.session.get(Vehicle, test_vehicle_id)
 
         assert test_vehicle.fillups.count() == 2
         with app_fixture.test_client(user=test_user) as test_client_authenticated:
@@ -66,7 +66,7 @@ def temp_fillup_id(app_fixture, temp_vehicle_id):
 
 def test_logs__other_user_error(app_fixture, test_user_id, temp_vehicle_id):
     with app_fixture.app_context():
-        test_user = User.query.get(test_user_id)
+        test_user = db.session.get(User, test_user_id)
 
         with app_fixture.test_client(user=test_user) as test_client_authenticated:
             resp = test_client_authenticated.get(
@@ -81,7 +81,7 @@ def test_logs__other_user_error(app_fixture, test_user_id, temp_vehicle_id):
 
 def test_logs__other_user_error__json(app_fixture, test_user_id, temp_vehicle_id):
     with app_fixture.app_context():
-        test_user = User.query.get(test_user_id)
+        test_user = db.session.get(User, test_user_id)
 
         with app_fixture.test_client(user=test_user) as test_client_authenticated:
             resp = test_client_authenticated.get(
@@ -97,8 +97,8 @@ def test_logs__other_user_error__json(app_fixture, test_user_id, temp_vehicle_id
 
 def test_logs__post(app_fixture, test_user_id, test_vehicle_id):
     with app_fixture.app_context():
-        test_user = User.query.get(test_user_id)
-        test_vehicle = Vehicle.query.get(test_vehicle_id)
+        test_user = db.session.get(User, test_user_id)
+        test_vehicle = db.session.get(Vehicle, test_vehicle_id)
 
         assert test_vehicle.fillups.count() == 0
         with app_fixture.test_client(user=test_user) as test_client_authenticated:
@@ -127,8 +127,8 @@ def test_logs__post_invalid(
     app_fixture, test_user_id, test_vehicle_id, sample_fillup_id_1
 ):
     with app_fixture.app_context():
-        test_user = User.query.get(test_user_id)
-        test_vehicle = Vehicle.query.get(test_vehicle_id)
+        test_user = db.session.get(User, test_user_id)
+        test_vehicle = db.session.get(Vehicle, test_vehicle_id)
 
         assert test_vehicle.fillups.count() == 1
         with app_fixture.test_client(user=test_user) as test_client_authenticated:
@@ -153,8 +153,8 @@ def test_logs__delete(
     app_fixture, test_vehicle_id, test_user_id, sample_fillup_id_1, sample_fillup_ids
 ):
     with app_fixture.app_context():
-        test_user = User.query.get(test_user_id)
-        sample_vehicle = Vehicle.query.get(test_vehicle_id)
+        test_user = db.session.get(User, test_user_id)
+        sample_vehicle = db.session.get(Vehicle, test_vehicle_id)
 
         assert sample_vehicle.fillups.count() == 2
         with app_fixture.test_client(user=test_user) as test_client_authenticated:
@@ -180,8 +180,8 @@ def test_logs__delete_error(
     )
     mocker.patch("fuel_logger.fuel_logs.routes.db.session.commit", mocked_fn)
     with app_fixture.app_context():
-        test_user = User.query.get(test_user_id)
-        sample_vehicle = Vehicle.query.get(test_vehicle_id)
+        test_user = db.session.get(User, test_user_id)
+        sample_vehicle = db.session.get(Vehicle, test_vehicle_id)
 
         assert sample_vehicle.fillups.count() == 2
         with app_fixture.test_client(user=test_user) as test_client_authenticated:
@@ -211,8 +211,8 @@ def test_logs__bulk_delete(
     app_fixture, test_vehicle_id, test_user_id, sample_fillup_id_1, sample_fillup_ids
 ):
     with app_fixture.app_context():
-        test_user = User.query.get(test_user_id)
-        sample_vehicle = Vehicle.query.get(test_vehicle_id)
+        test_user = db.session.get(User, test_user_id)
+        sample_vehicle = db.session.get(Vehicle, test_vehicle_id)
 
         assert sample_vehicle.fillups.count() == 2
         with app_fixture.test_client(user=test_user) as test_client_authenticated:
@@ -239,8 +239,8 @@ def test_logs__bulk_delete_error(
     mocker.patch("fuel_logger.fuel_logs.routes.db.session.commit", mocked_fn)
 
     with app_fixture.app_context():
-        test_user = User.query.get(test_user_id)
-        sample_vehicle = Vehicle.query.get(test_vehicle_id)
+        test_user = db.session.get(User, test_user_id)
+        sample_vehicle = db.session.get(Vehicle, test_vehicle_id)
 
         assert sample_vehicle.fillups.count() == 2
         with app_fixture.test_client(user=test_user) as test_client_authenticated:
@@ -266,8 +266,8 @@ def test_logs_bulk_upload__get(
     test_user_id,
 ):
     with app_fixture.app_context():
-        test_user = User.query.get(test_user_id)
-        sample_vehicle = Vehicle.query.get(test_vehicle_id)
+        test_user = db.session.get(User, test_user_id)
+        sample_vehicle = db.session.get(Vehicle, test_vehicle_id)
 
         assert sample_vehicle.fillups.count() == 0
 
@@ -282,11 +282,11 @@ def test_logs_bulk_upload__post(
     app_fixture, test_vehicle_id, test_user_id, test_username, fillups_csv
 ):
     with app_fixture.app_context():
-        test_user = User.query.get(test_user_id)
-        sample_vehicle = Vehicle.query.get(test_vehicle_id)
+        test_user = db.session.get(User, test_user_id)
+        sample_vehicle = db.session.get(Vehicle, test_vehicle_id)
         with app_fixture.test_client(user=test_user) as test_client_authenticated:
-            test_user = User.query.get(test_user_id)
-            sample_vehicle = Vehicle.query.get(test_vehicle_id)
+            test_user = db.session.get(User, test_user_id)
+            sample_vehicle = db.session.get(Vehicle, test_vehicle_id)
             assert sample_vehicle.fillups.count() == 0
             resp = test_client_authenticated.post(
                 f"/logs/{test_vehicle_id}/bulk_upload",
@@ -307,11 +307,11 @@ def test_logs_bulk_upload__post_error(
     app_fixture, test_vehicle_id, test_user_id, invalid_csv, fillups_csv, mocker
 ):
     with app_fixture.app_context():
-        test_user = User.query.get(test_user_id)
-        sample_vehicle = Vehicle.query.get(test_vehicle_id)
+        test_user = db.session.get(User, test_user_id)
+        sample_vehicle = db.session.get(Vehicle, test_vehicle_id)
         with app_fixture.test_client(user=test_user) as test_client_authenticated:
-            test_user = User.query.get(test_user_id)
-            sample_vehicle = Vehicle.query.get(test_vehicle_id)
+            test_user = db.session.get(User, test_user_id)
+            sample_vehicle = db.session.get(Vehicle, test_vehicle_id)
             assert sample_vehicle.fillups.count() == 0
 
             # No data
@@ -357,8 +357,8 @@ def test_logs_bulk_download(
     app_fixture, test_user_id, test_vehicle_id, sample_fillup_ids, temp_vehicle_id
 ):
     with app_fixture.app_context():
-        test_user = User.query.get(test_user_id)
-        test_vehicle = Vehicle.query.get(test_vehicle_id)
+        test_user = db.session.get(User, test_user_id)
+        test_vehicle = db.session.get(Vehicle, test_vehicle_id)
 
         assert test_vehicle.fillups.count() == 2
         with app_fixture.test_client(user=test_user) as test_client_authenticated:
@@ -389,7 +389,7 @@ def test_logs_bulk_download(
 
 def test_logs_bulk_download__error(app_fixture, test_user_id, temp_vehicle_id):
     with app_fixture.app_context():
-        test_user = User.query.get(test_user_id)
+        test_user = db.session.get(User, test_user_id)
 
         with app_fixture.test_client(user=test_user) as test_client_authenticated:
             resp = test_client_authenticated.get(

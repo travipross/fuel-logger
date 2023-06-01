@@ -1,20 +1,21 @@
-from fuel_logger import db, KM_PER_MILE
-from fuel_logger.models import Fillup
-
 from datetime import datetime
+
 from flask import g
 from flask_wtf import FlaskForm
 from sqlalchemy import func
 from wtforms import (
     DateField,
-    TimeField,
     DecimalField,
+    FileField,
     IntegerField,
     SubmitField,
-    FileField,
+    TimeField,
     ValidationError,
 )
 from wtforms.validators import DataRequired
+
+from fuel_logger import KM_PER_MILE, db
+from fuel_logger.models import Fillup
 
 
 class FillupForm(FlaskForm):
@@ -28,7 +29,7 @@ class FillupForm(FlaskForm):
 
     def validate_odometer(self, odometer):
         last_odo = (
-            db.session.query(func.max(Fillup.odometer_km))
+            db.session.query(db.func.max(Fillup.odometer_km))
             .filter_by(vehicle_id=g.vehicle.id)
             .scalar()
             or 0

@@ -1,28 +1,27 @@
-from fuel_logger import db, KM_PER_MILE
-from fuel_logger.fuel_logs import bp
-from fuel_logger.fuel_logs.forms import FillupForm, ImportForm
-from fuel_logger.models import Vehicle, Fillup
+import pandas as pd
+from flask import (
+    Response,
+    current_app,
+    flash,
+    g,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
+from flask_login import current_user, login_required
 from werkzeug.exceptions import Forbidden
 
-from flask import (
-    render_template,
-    flash,
-    redirect,
-    url_for,
-    g,
-    request,
-    current_app,
-    Response,
-)
-from flask_login import login_required, current_user
-
-import pandas as pd
+from fuel_logger import KM_PER_MILE, db
+from fuel_logger.fuel_logs import bp
+from fuel_logger.fuel_logs.forms import FillupForm, ImportForm
+from fuel_logger.models import Fillup, Vehicle
 
 
 @bp.route("/logs/<vehicle_id>", methods=["GET", "POST"])
 @login_required
 def logs(vehicle_id):
-    v = Vehicle.query.get_or_404(vehicle_id)
+    v = db.get_or_404(Vehicle, vehicle_id)
     if v.owner != current_user:
         raise Forbidden("You have no access to these logs")
     g.vehicle = v
@@ -70,7 +69,7 @@ def logs(vehicle_id):
 @bp.route("/logs/<vehicle_id>/bulk_upload", methods=["GET", "POST"])
 @login_required
 def bulk_upload(vehicle_id):
-    vehicle = Vehicle.query.get_or_404(vehicle_id)
+    vehicle = db.get_or_404(Vehicle, vehicle_id)
     form = ImportForm()
     if request.method == "POST":
         if "file_obj" not in request.files:
@@ -100,7 +99,7 @@ def bulk_upload(vehicle_id):
 @bp.route("/logs/<vehicle_id>/bulk_download")
 @login_required
 def bulk_download(vehicle_id):
-    v = Vehicle.query.get_or_404(vehicle_id)
+    v = db.get_or_404(Vehicle, vehicle_id)
     if v.owner != current_user:
         raise Forbidden("You have no access to these logs")
     df = v.get_stats_df()
@@ -130,7 +129,7 @@ def bulk_download(vehicle_id):
 @bp.route("/logs/<vehicle_id>/bulk_delete", methods=["DELETE"])
 @login_required
 def bulk_delete(vehicle_id):
-    vehicle = Vehicle.query.get_or_404(vehicle_id)
+    vehicle = db.get_or_404(Vehicle, vehicle_id)
     if vehicle.owner != current_user:
         raise Forbidden("You have no access to these logs")
     for f in vehicle.fillups:
@@ -148,7 +147,7 @@ def bulk_delete(vehicle_id):
 @bp.route("/logs/delete/<log_id>", methods=["DELETE"])
 @login_required
 def delete_log(log_id):
-    l = Fillup.query.get_or_404(log_id)
+    l = db.get_or_404(Fillup, log_id)
     if l.vehicle.owner != current_user:
         raise Forbidden("You have no access to these logs")
     try:

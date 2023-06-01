@@ -63,7 +63,7 @@ def test_send_password_reset_email(
     mocker.patch("fuel_logger.utils.email.mail", new=mock_mailer)
 
     with app_fixture.app_context():
-        user = User.query.get(sample_user_id)
+        user = db.session.get(User, sample_user_id)
 
     send_password_reset_email(user)
     time.sleep(0.05)
@@ -74,8 +74,3 @@ def test_send_password_reset_email(
     )
     assert mock_mailer.send.call_args.args[0].sender == app_fixture.config["ADMINS"][0]
     assert mock_mailer.send.call_args.args[0].recipients == [sample_user_email]
-    # assert mock_mailer.send.call_args.args[0].body == "Hello world, this is a test"
-    # assert (
-    #     mock_mailer.send.call_args.args[0].html
-    #     == "<h1>Hello world, this is a test</h1>"
-    # )

@@ -1,10 +1,10 @@
+from flask import flash, redirect, render_template, url_for
+from flask_login import current_user, login_required
+
 from fuel_logger import db
-from fuel_logger.models import Vehicle, User
+from fuel_logger.models import User, Vehicle
 from fuel_logger.vehicles import bp
 from fuel_logger.vehicles.forms import VehicleForm
-
-from flask import flash, render_template, redirect, url_for
-from flask_login import login_required, current_user
 
 
 @bp.route("/add_vehicle", methods=["GET", "POST"])
@@ -28,7 +28,7 @@ def add_vehicle():
 @bp.route("/garage/<user_id>")
 @login_required
 def garage(user_id):
-    u = User.query.get(user_id)
+    u = db.session.get(User, user_id)
     if u != current_user:
         return (
             render_template(
@@ -44,7 +44,7 @@ def garage(user_id):
 @bp.route("/set_fav_vehicle/<user_id>/<vehicle_id>")
 @login_required
 def set_fav_vehicle(user_id, vehicle_id):
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)
 
     if user is None:
         flash("invalid user")

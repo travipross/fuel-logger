@@ -1,13 +1,13 @@
 import datetime
-from fuel_logger import db, KM_PER_MILE, MPG_IMP_PER_MPG, MPG_LP100K
-from fuel_logger.models.users import User
-from fuel_logger.models.fillups import Fillup
-from fuel_logger.utils.stats import compute_stats_from_fillup_df
-
 from datetime import datetime, timedelta
-from sqlalchemy import and_
 
 import pandas as pd
+from sqlalchemy import and_
+
+from fuel_logger import KM_PER_MILE, MPG_IMP_PER_MPG, MPG_LP100K, db
+from fuel_logger.models.fillups import Fillup
+from fuel_logger.models.users import User
+from fuel_logger.utils.stats import compute_stats_from_fillup_df
 
 
 class Vehicle(db.Model):

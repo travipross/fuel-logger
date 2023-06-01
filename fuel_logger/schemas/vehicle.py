@@ -1,7 +1,7 @@
+from marshmallow import fields
+
 from fuel_logger import ma
 from fuel_logger.models import Vehicle
-
-from marshmallow import fields
 
 
 class VehicleSchema(ma.SQLAlchemySchema):

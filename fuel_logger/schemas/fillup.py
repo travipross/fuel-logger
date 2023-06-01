@@ -1,7 +1,7 @@
-from fuel_logger import ma
-from fuel_logger.models import Fillup, Vehicle
-
 from marshmallow import fields
+
+from fuel_logger import db, ma
+from fuel_logger.models import Fillup, Vehicle
 
 
 class FillupSchema(ma.SQLAlchemyAutoSchema):
@@ -13,12 +13,17 @@ class FillupSchema(ma.SQLAlchemyAutoSchema):
     vehicle_id = fields.Method("get_vehicle_id")
 
     def get_vehicle_id(self, obj):
-        vehicle = Vehicle.query.get(obj.vehicle_id)
-        return vehicle.id
+        print(obj)
+        vehicle = db.session.get(Vehicle, obj.vehicle_id)
+        return vehicle.id if vehicle is not None else None
 
     def get_vehicle_description(self, obj):
-        vehicle = Vehicle.query.get(obj.vehicle_id)
-        return f"{vehicle.year} {vehicle.make} {vehicle.model}"
+        vehicle = db.session.get(Vehicle, obj.vehicle_id)
+        return (
+            f"{vehicle.year} {vehicle.make} {vehicle.model}"
+            if vehicle is not None
+            else None
+        )
 
 
 fillup_schema = FillupSchema()

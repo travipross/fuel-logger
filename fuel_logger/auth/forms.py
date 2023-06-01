@@ -1,8 +1,8 @@
-from fuel_logger.models import User
-
 from flask_wtf import FlaskForm
-from wtforms import PasswordField, BooleanField, StringField, SubmitField
+from wtforms import BooleanField, PasswordField, StringField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
+
+from fuel_logger.models import User
 
 
 class LoginForm(FlaskForm):
