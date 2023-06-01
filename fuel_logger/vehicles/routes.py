@@ -42,11 +42,21 @@ def garage(user_id):
 # TODO: Make authenticated route and get user id from session
 # TODO: Figure out if it's possible to set someone else's vehicle as a favourite
 @bp.route("/set_fav_vehicle/<user_id>/<vehicle_id>")
+@login_required
 def set_fav_vehicle(user_id, vehicle_id):
     user = User.query.get(user_id)
-    if not user:
+
+    if user is None:
         flash("invalid user")
         return redirect(url_for("vehicles.garage", user_id=user_id))
+
+    if user != current_user:
+        return (
+            render_template(
+                "403.html", message="You don't have access to this garage."
+            ),
+            403,
+        )
 
     vehicle = user.vehicles.filter_by(id=vehicle_id).first()
     if not vehicle:
