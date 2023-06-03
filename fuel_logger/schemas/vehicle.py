@@ -18,10 +18,10 @@ class VehicleSchema(ma.SQLAlchemySchema):
     stats = fields.Method("get_stats")
 
     def get_odometer(self, obj):
-        return obj.current_odometer
+        return obj.current_odometer if hasattr(obj, "current_odometer") else None
 
     def get_stats(self, obj):
-        return obj.compute_stats()
+        return obj.compute_stats() if hasattr(obj, "compute_stats") else None
 
 
 vehicle_schema = VehicleSchema()
