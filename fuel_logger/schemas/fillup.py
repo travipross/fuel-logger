@@ -9,16 +9,23 @@ class FillupSchema(ma.SQLAlchemyAutoSchema):
         model = Fillup
         load_instance = True
 
-    vehicle = fields.Method("get_vehicle_description")
+    vehicle = fields.Method("get_vehicle_description", dump_only=True)
     vehicle_id = fields.Method("get_vehicle_id")
 
     def get_vehicle_id(self, obj):
-        print(obj)
-        vehicle = db.session.get(Vehicle, obj.vehicle_id)
+        vehicle = (
+            db.session.get(Vehicle, obj.vehicle_id)
+            if hasattr(obj, "vehicle_id")
+            else None
+        )
         return vehicle.id if vehicle is not None else None
 
     def get_vehicle_description(self, obj):
-        vehicle = db.session.get(Vehicle, obj.vehicle_id)
+        vehicle = (
+            db.session.get(Vehicle, obj.vehicle_id)
+            if hasattr(obj, "vehicle_id")
+            else None
+        )
         return (
             f"{vehicle.year} {vehicle.make} {vehicle.model}"
             if vehicle is not None
