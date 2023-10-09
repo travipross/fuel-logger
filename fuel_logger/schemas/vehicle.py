@@ -14,6 +14,7 @@ class VehicleSchema(ma.SQLAlchemySchema):
     model = ma.auto_field()
     year = ma.auto_field()
     odo_unit = ma.auto_field()
+    is_favourite = ma.auto_field()
     current_odometer = fields.Method("get_odometer")
     stats = fields.Method("get_stats")
 
