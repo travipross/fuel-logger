@@ -66,4 +66,4 @@ def fav_vehicle():
     )
     if vehicle:
         return vehicle_schema.dump(vehicle)
-    return None
+    return error_response(status_code=404, message="Vehicle not found.")
