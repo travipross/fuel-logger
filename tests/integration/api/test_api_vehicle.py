@@ -1,7 +1,9 @@
-import pytest
-from fuel_logger.models import Vehicle
-from fuel_logger import db
 import uuid
+
+import pytest
+
+from fuel_logger import db
+from fuel_logger.models import Vehicle
 
 
 @pytest.fixture
@@ -118,3 +120,104 @@ def test_vehicle_delete(
     # Confirm vehicle no longer exists in database
     with app_fixture.app_context():
         assert db.session.get(Vehicle, vehicle_id_to_delete) is None
+
+
+def test_vehicle_get_favourite(
+    test_client, basic_auth_header, app_fixture, test_vehicle_id
+):
+    # Ensure vehicle exists
+    with app_fixture.app_context():
+        assert db.session.get(Vehicle, test_vehicle_id) is not None
+
+    # Make HTTP GET request
+    resp = test_client.get(f"/api/fav_vehicle", headers=basic_auth_header)
+
+    # Assert API responded correctly
+    assert resp.status_code == 200
+    assert resp.json.get("id") == test_vehicle_id
+
+
+@pytest.fixture
+def unset_favourite_vehicle(test_vehicle_id, app_fixture):
+    with app_fixture.app_context():
+        v = db.session.get(Vehicle, test_vehicle_id)
+        v.is_favourite = False
+        db.session.commit()
+        yield
+
+    with app_fixture.app_context():
+        v = db.session.get(Vehicle, test_vehicle_id)
+        v.is_favourite = True
+        db.session.commit()
+
+
+@pytest.mark.usefixtures("unset_favourite_vehicle")
+def test_vehicle_get_favourite_none_found(
+    test_client, basic_auth_header, app_fixture, test_vehicle_id
+):
+    # Ensure vehicles exist or not
+    with app_fixture.app_context():
+        assert db.session.get(Vehicle, test_vehicle_id) is not None
+
+    # Make HTTP GET request
+    resp = test_client.get(f"/api/fav_vehicle", headers=basic_auth_header)
+
+    # Assert API responded correctly
+    assert resp.status_code == 404
+    assert resp.json.get("message") == "Vehicle not found."
+
+
+def test_vehicle_set_favourite(
+    test_client, basic_auth_header, app_fixture, test_vehicle_id, test_vehicle_id_alt
+):
+    # Ensure vehicle exists
+    with app_fixture.app_context():
+        vehicle = db.session.get(Vehicle, test_vehicle_id)
+        vehicle_alt = db.session.get(Vehicle, test_vehicle_id_alt)
+
+        assert vehicle is not None
+        assert vehicle.is_favourite == True
+
+        assert vehicle_alt is not None
+        assert vehicle_alt.is_favourite == False
+
+    # Make HTTP POST request
+    resp = test_client.post(
+        f"/api/fav_vehicle", headers=basic_auth_header, json={"id": test_vehicle_id_alt}
+    )
+
+    # Assert API responded correctly
+    assert resp.status_code == 200
+    assert resp.json.get("status") == "UPDATED"
+
+    # Asset db record is updated
+    with app_fixture.app_context():
+        vehicle = db.session.get(Vehicle, test_vehicle_id)
+        vehicle_alt = db.session.get(Vehicle, test_vehicle_id_alt)
+
+        assert vehicle is not None
+        assert vehicle.is_favourite == False
+
+        assert vehicle_alt is not None
+        assert vehicle_alt.is_favourite == True
+
+
+def test_vehicle_set_favourite_invalid(
+    test_user_id, secondary_vehicle_id_1, test_client, basic_auth_header, app_fixture
+):
+    # Ensure vehicle exists and is owned by someone else
+    with app_fixture.app_context():
+        vehicle = db.session.get(Vehicle, secondary_vehicle_id_1)
+        assert vehicle is not None
+        assert vehicle.owner_id != test_user_id
+
+    # Make HTTP POST request
+    resp = test_client.post(
+        f"/api/fav_vehicle",
+        headers=basic_auth_header,
+        json={"id": secondary_vehicle_id_1},
+    )
+
+    # Assert API responded correctly
+    assert resp.status_code == 200
+    assert resp.json.get("status") == "error"

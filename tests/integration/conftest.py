@@ -36,9 +36,26 @@ def test_client(app_fixture):
 def test_vehicle_id(app_fixture):
     with app_fixture.app_context():
         vehicle = Vehicle(
-            make="Honda (Test)",
-            model="Civic (Test)",
+            make="Honda (Test)", model="Civic (Test)", year="2017", is_favourite=True
+        )
+        db.session.add(vehicle)
+        db.session.commit()
+
+        yield vehicle.id
+
+    with app_fixture.app_context():
+        db.session.delete(vehicle)
+        db.session.commit()
+
+
+@pytest.fixture(autouse=True, scope="module")
+def test_vehicle_id_alt(app_fixture):
+    with app_fixture.app_context():
+        vehicle = Vehicle(
+            make="Honda (Test-alt)",
+            model="Civic (Test-alt)",
             year="2017",
+            is_favourite=False,
         )
         db.session.add(vehicle)
         db.session.commit()
@@ -52,14 +69,20 @@ def test_vehicle_id(app_fixture):
 
 @pytest.fixture(autouse=True, scope="module")
 def test_user_id(
-    test_vehicle_id, app_fixture, test_username, test_password, test_user_email
+    test_vehicle_id,
+    test_vehicle_id_alt,
+    app_fixture,
+    test_username,
+    test_password,
+    test_user_email,
 ):
     with app_fixture.app_context():
         test_vehicle = db.session.get(Vehicle, test_vehicle_id)
+        test_vehicle_alt = db.session.get(Vehicle, test_vehicle_id_alt)
         user = User(
             username=test_username,
             email=test_user_email,
-            vehicles=[test_vehicle],
+            vehicles=[test_vehicle, test_vehicle_alt],
         )
         user.set_password(test_password)
         db.session.add(user)
