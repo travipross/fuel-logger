@@ -19,3 +19,9 @@ def get_user(id):
 def get_users():
     users = User.query.all()
     return jsonify(users_schema.dump(users))
+
+
+@bp.route("/me", methods=["GET"])
+@multi_auth.login_required
+def get_current_user():
+    return user_schema.dump(multi_auth.current_user())
