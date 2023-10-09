@@ -6,6 +6,7 @@ dominate==2.7.0
 email-validator==2.0.0.post2
 Flask==2.3.2
 Flask-Bootstrap==3.3.7.1
+Flask-Cors==4.0.0
 Flask-HTTPAuth==4.8.0
 Flask-Login==0.6.2
 Flask-Mail==0.9.1

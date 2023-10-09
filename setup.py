@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 setup(
     name="fuel-logger",
@@ -12,6 +12,7 @@ setup(
         "email-validator",
         "flask",
         "flask-bootstrap",
+        "flask-cors",
         "flask-httpauth",
         "flask-login",
         "flask-mail",
