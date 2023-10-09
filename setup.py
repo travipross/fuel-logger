@@ -24,6 +24,7 @@ setup(
         "marshmallow-sqlalchemy",
         "pandas",
         "pyjwt",
+        "Werkzeug<3",
     ],
     entry_points={"console_scripts": ["fuel-logger = fuel_logger.fuel_logger:wsgi"]},
 )
