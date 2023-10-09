@@ -10,7 +10,7 @@ setup(
     install_requires=[
         "python-dotenv",
         "email-validator",
-        "flask",
+        "flask<3",
         "flask-bootstrap",
         "flask-cors",
         "flask-httpauth",
