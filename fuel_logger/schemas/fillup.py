@@ -11,6 +11,12 @@ class FillupSchema(ma.SQLAlchemyAutoSchema):
 
     vehicle = fields.Method("get_vehicle_description", dump_only=True)
     vehicle_id = fields.Method("get_vehicle_id")
+    dist = fields.Number(dump_only=True)
+    dist_mi = fields.Number(dump_only=True)
+    lp100k = fields.Number(dump_only=True)
+    mpg = fields.Number(dump_only=True)
+    mpg_imp = fields.Number(dump_only=True)
+    odometer_mi = fields.Number(dump_only=True)
 
     def get_vehicle_id(self, obj):
         vehicle = (
