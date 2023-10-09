@@ -3,7 +3,7 @@ from flask import jsonify, request
 from fuel_logger import db
 from fuel_logger.api import bp
 from fuel_logger.api.auth import multi_auth
-from fuel_logger.api.errors import bad_request
+from fuel_logger.api.errors import bad_request, error_response
 from fuel_logger.models import Vehicle
 from fuel_logger.schemas.vehicle import vehicle_schema, vehicles_schema
 
@@ -43,3 +43,27 @@ def delete_vehicle(id):
     db.session.delete(vehicle)
     db.session.commit()
     return jsonify({"status": "DELETED"})
+
+
+@bp.route("/fav_vehicle", methods=["GET", "POST"])
+@multi_auth.login_required
+def fav_vehicle():
+    if request.method == "POST":
+        id = request.get_json().get("id")
+        vehicle = multi_auth.current_user().vehicles.filter_by(id=id).one_or_none()
+        if vehicle:
+            multi_auth.current_user().set_favourite_vehicle(vehicle)
+            return jsonify({"status": "UPDATED"})
+        else:
+            return jsonify(
+                {
+                    "status": "error",
+                    "message": "Vehicle can't be set as favourite as it doesn't belong to user.",
+                }
+            )
+    vehicle = (
+        multi_auth.current_user().vehicles.filter_by(is_favourite=True).one_or_none()
+    )
+    if vehicle:
+        return vehicle_schema.dump(vehicle)
+    return error_response(status_code=404, message="Vehicle not found.")

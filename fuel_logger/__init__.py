@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_bootstrap import Bootstrap
+from flask_cors import CORS
 from flask_login import LoginManager
 from flask_mail import Mail
 from flask_marshmallow import Marshmallow
@@ -26,6 +27,7 @@ login.login_view = "auth.login"
 moment = Moment()
 bootstrap = Bootstrap()
 mail = Mail()
+cors = CORS()
 
 
 def create_app(config_class=Config):
@@ -41,6 +43,7 @@ def create_app(config_class=Config):
     moment.init_app(app)
     bootstrap.init_app(app)
     mail.init_app(app)
+    cors.init_app(app)
 
     from fuel_logger.errors import bp as errors_bp
 

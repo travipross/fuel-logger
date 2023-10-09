@@ -9,3 +9,10 @@ def test_list_user(test_client, basic_auth_header, test_user_id):
     assert resp.status_code == 200
     assert len(resp.json) > 0
     assert test_user_id in [u.get("id") for u in resp.json]
+
+
+def test_me(test_client, basic_auth_header, test_user_id):
+    resp = test_client.get("/api/me", headers=basic_auth_header)
+    assert resp.status_code == 200
+    assert len(resp.json) > 0
+    assert test_user_id == resp.json.get("id")
