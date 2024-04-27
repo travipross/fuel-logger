@@ -10,10 +10,12 @@ from alembic import context
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
+
 config = context.config
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
+
 fileConfig(config.config_file_name)
 logger = logging.getLogger("alembic.env")
 
@@ -21,11 +23,12 @@ logger = logging.getLogger("alembic.env")
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
+
 from flask import current_app
 
 config.set_main_option(
     "sqlalchemy.url",
-    str(current_app.extensions["migrate"].db.engine.url).replace("%", "%%"),
+    current_app.config.get("SQLALCHEMY_DATABASE_URI").replace("%", "%%"),
 )
 target_metadata = current_app.extensions["migrate"].db.metadata
 
@@ -65,6 +68,7 @@ def run_migrations_online():
     # this callback is used to prevent an auto-migration from being generated
     # when there are no changes to the schema
     # reference: http://alembic.zzzcomputing.com/en/latest/cookbook.html
+
     def process_revision_directives(context, revision, directives):
         if getattr(config.cmd_opts, "autogenerate", False):
             script = directives[0]
